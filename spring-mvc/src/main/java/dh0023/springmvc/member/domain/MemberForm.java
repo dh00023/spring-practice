@@ -1,0 +1,13 @@
+package dh0023.springmvc.member.domain;
+
+public class MemberForm {
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    private String name;
+}
