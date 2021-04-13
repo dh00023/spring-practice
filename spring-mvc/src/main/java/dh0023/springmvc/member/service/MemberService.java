@@ -5,9 +5,14 @@ import dh0023.springmvc.member.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * JPA를 통한 모든 데이터 변경은 트랜잭션 안에서 실행해야하기 때문에 Transactional 어노테이션 설정
+ */
+@Transactional
 public class MemberService {
 
 

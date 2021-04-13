@@ -1,33 +1,33 @@
 package dh0023.springmvc.member.service;
 
 import dh0023.springmvc.member.domain.Member;
-import dh0023.springmvc.member.repository.MemoryMemberRepository;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import dh0023.springmvc.member.repository.MemberRepository;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import javax.transaction.Transactional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * 단위케이스
- * 순수한 단위 테스트가 더 좋은 테스트일 확률이 높다.
+ * 스프링 통합 테스트
+ * @SpringBootTest 어노테이션으로 통합 테스트 가능(스프링 컨테이너와 테스트를 함께 실행)
+ * @Transactional 테스트 실행시 Transaction을 실행하고 테스트 완료가되면 Rollback이 된다.(테스트 케이스에 붙은 경우에만)
  */
-class MemberServiceTest {
+@SpringBootTest
+@Transactional
+class MemberServiceIntegrationTest {
 
+    /**
+     * 생성자 주입 방식을 선호하지만,
+     * 테스트시에는 @Autowired로 바로 해도 무관
+     */
+    @Autowired
     MemberService memberService;
-    MemoryMemberRepository memberRepository;
-
-    @BeforeEach
-    public void beforeEach(){
-        memberRepository = new MemoryMemberRepository();
-        memberService = new MemberService(memberRepository);
-    }
-    @AfterEach
-    public void afterEach(){
-        memberRepository.clearStore();
-    }
+    @Autowired
+    MemberRepository memberRepository;
 
     /**
      * 테스트 코드는 빌드에서 제외되기 때문에
@@ -62,16 +62,9 @@ class MemberServiceTest {
 
         // when
         memberService.join(member);
-//        try{
-//            memberService.join(member2);
-//            fail();
-//        }catch(IllegalStateException e){
-//            assertThat(e.getMessage().equals("이미 존재하는 회원입니다."));
-//        }
 
-        // lambda함수 수행시 Exception을 수행해야한다!!
+        // then
         IllegalStateException exception = assertThrows(IllegalStateException.class, () -> memberService.join(member2));
         assertThat(exception.getMessage().equals("이미 존재하는 회원입니다."));
     }
-
 }
