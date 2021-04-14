@@ -2,7 +2,6 @@ package dh0023.springmvc.config;
 
 import dh0023.springmvc.member.repository.*;
 import dh0023.springmvc.member.service.MemberService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
