@@ -109,3 +109,88 @@ public class MemberServiceImpl implements MemberService{
 `AppConfig`를 통해 의존성 주입을 다루고, 기존 서비스에서의 구현체 의존성을 제거하여 DIP를 지킬 수 있게 변경
 
 **구성 영역(`AppConfig`)**은 정책이 변경되면 당연히 변경된다. 하지만, 사용영역은 변경이 필요없어진다.
+
+## IoC
+
+프로그램에 대한 제어 흐름에 대한 권한은 모두 `AppConfig`가 가지고 있다. 
+이렇듯 프로그램의 제어 흐름을 직접 제어하는 것이 아니라 외부에서 관리하는 것을 제어의 역전(IoC)이라 한다.
+
+
+# Spring ApplicatoinContext
+
+```java
+package dh0023.springcore.config;
+
+import dh0023.springcore.discount.service.DiscountPolicy;
+import dh0023.springcore.discount.service.RateDiscountPolicy;
+import dh0023.springcore.member.repository.MemberRepository;
+import dh0023.springcore.member.repository.MemoryMemberRepository;
+import dh0023.springcore.member.service.MemberService;
+import dh0023.springcore.member.service.MemberServiceImpl;
+import dh0023.springcore.order.service.OrderService;
+import dh0023.springcore.order.service.OrderServiceImpl;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * 애플리케션의 실제 동작에 필요한 구현 객체 생성
+ * 생성한 객체 인스턴스의 참조를 생성자를 통해 주입해준다.
+ */
+@Configuration
+public class AppConfig {
+
+    @Bean
+    public MemberService memberService() {
+        return new MemberServiceImpl(getMemberRepository());
+    }
+
+    @Bean
+    public MemberRepository getMemberRepository() {
+        return new MemoryMemberRepository();
+    }
+
+    @Bean
+    public OrderService orderService(){
+        return new OrderServiceImpl(getMemberRepository(), getDiscountPolicy());
+    }
+
+    @Bean
+    public DiscountPolicy getDiscountPolicy() {
+        return new RateDiscountPolicy();
+    }
+
+}
+```
+
+AppConfig에 `@Configuration`을 추가하여, `@Bean` 설정을 관리하는 파일인 것을 어노테이션으로 설정해준다.
+
+그 후, 
+
+```java
+public class MemberApp {
+
+    public static void main(String[] args) {
+
+        // annotation 기반으로 관리(AppConfig 기반)
+        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(AppConfig.class);
+
+
+        MemberService memberService = applicationContext.getBean("memberService", MemberService.class);
+
+        Member member = new Member(1L, "memberA", Grade.VIP);
+        memberService.join(member);
+
+        Member member1 = memberService.findByMember(1L);
+
+        System.out.println("new member => " + member.getName());
+        System.out.println("findBy member => " + member1.getName());
+    }
+}
+```
+
+Spring Container(ApplicationContext)를 사용해 객체(Bean)을 관리한다.
+
+- `ApplicationContext` : 스프링 컨테이너
+- 스프링 컨테이너는 `@Configuration` 이 붙은 AppConfig를 설정(구성) 정보로 사용한다. 
+- `@Bean` 이라 적힌 메서드를 모두 호출해서 반환된 객체를 스프링 컨테이너에 등록한다. 이렇게 스프링 컨테이너에 등록된 객체를 스프링 빈이라 한다.
+- 스프링 빈은 `@Bean` 이 붙은 메서드의 명을 스프링 빈의 이름으로 사용한다. ( memberService , orderService )
