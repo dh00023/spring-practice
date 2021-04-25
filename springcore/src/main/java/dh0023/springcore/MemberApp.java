@@ -12,8 +12,9 @@ public class MemberApp {
     public static void main(String[] args) {
 
         // annotation 기반으로 관리(AppConfig 기반)
+        // applicationContext는 스프링 컨테이너며, 인터페이스다.(다형성)
+        // AnnotationConfigApplicationContext은 구현
         ApplicationContext applicationContext = new AnnotationConfigApplicationContext(AppConfig.class);
-
 
         MemberService memberService = applicationContext.getBean("memberService", MemberService.class);
 
