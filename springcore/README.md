@@ -107,3 +107,5 @@ public class MemberServiceImpl implements MemberService{
 ```
 
 `AppConfig`를 통해 의존성 주입을 다루고, 기존 서비스에서의 구현체 의존성을 제거하여 DIP를 지킬 수 있게 변경
+
+**구성 영역(`AppConfig`)**은 정책이 변경되면 당연히 변경된다. 하지만, 사용영역은 변경이 필요없어진다.

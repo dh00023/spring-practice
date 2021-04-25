@@ -1,6 +1,9 @@
 package dh0023.springcore.config;
 
+import dh0023.springcore.discount.service.DiscountPolicy;
 import dh0023.springcore.discount.service.FixDiscountPolicy;
+import dh0023.springcore.discount.service.RateDiscountPolicy;
+import dh0023.springcore.member.repository.MemberRepository;
 import dh0023.springcore.member.repository.MemoryMemberRepository;
 import dh0023.springcore.member.service.MemberService;
 import dh0023.springcore.member.service.MemberServiceImpl;
@@ -14,11 +17,19 @@ import dh0023.springcore.order.service.OrderServiceImpl;
 public class AppConfig {
 
     public MemberService memberService() {
-        return new MemberServiceImpl(new MemoryMemberRepository());
+        return new MemberServiceImpl(getMemberRepository());
+    }
+
+    private MemberRepository getMemberRepository() {
+        return new MemoryMemberRepository();
     }
 
     public OrderService orderService(){
-        return new OrderServiceImpl(new MemoryMemberRepository(), new FixDiscountPolicy());
+        return new OrderServiceImpl(getMemberRepository(), getDiscountPolicy());
+    }
+
+    private DiscountPolicy getDiscountPolicy() {
+        return new RateDiscountPolicy();
     }
 
 }
