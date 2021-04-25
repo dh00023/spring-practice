@@ -1,19 +1,26 @@
 package dh0023.springcore.order;
 
+import dh0023.springcore.config.AppConfig;
 import dh0023.springcore.member.domain.Grade;
 import dh0023.springcore.member.domain.Member;
 import dh0023.springcore.member.service.MemberService;
-import dh0023.springcore.member.service.MemberServiceImpl;
 import dh0023.springcore.order.domain.Order;
 import dh0023.springcore.order.service.OrderService;
-import dh0023.springcore.order.service.OrderServiceImpl;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class OrderServiceTest {
 
-    MemberService memberService = new MemberServiceImpl();
-    OrderService orderService = new OrderServiceImpl();
+    MemberService memberService;
+    OrderService orderService;
+
+    @BeforeEach
+    public void beforeEach(){
+        AppConfig appConfig = new AppConfig();
+        memberService = appConfig.memberService();
+        orderService = appConfig.orderService();
+    }
 
     @Test
     public void createOrder() {

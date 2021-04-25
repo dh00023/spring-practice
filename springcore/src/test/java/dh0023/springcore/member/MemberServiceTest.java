@@ -1,15 +1,22 @@
 package dh0023.springcore.member;
 
+import dh0023.springcore.config.AppConfig;
 import dh0023.springcore.member.domain.Grade;
 import dh0023.springcore.member.domain.Member;
 import dh0023.springcore.member.service.MemberService;
-import dh0023.springcore.member.service.MemberServiceImpl;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class MemberServiceTest {
 
-    MemberService memberService = new MemberServiceImpl();
+    MemberService memberService;
+
+    @BeforeEach
+    public void beforeEach(){
+        AppConfig appConfig = new AppConfig();
+        memberService = appConfig.memberService();
+    }
 
     @Test
     void join(){

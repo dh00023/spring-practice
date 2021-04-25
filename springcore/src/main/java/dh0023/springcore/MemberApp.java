@@ -1,14 +1,16 @@
 package dh0023.springcore;
 
+import dh0023.springcore.config.AppConfig;
 import dh0023.springcore.member.domain.Grade;
 import dh0023.springcore.member.domain.Member;
 import dh0023.springcore.member.service.MemberService;
-import dh0023.springcore.member.service.MemberServiceImpl;
 
 public class MemberApp {
 
     public static void main(String[] args) {
-        MemberService memberService = new MemberServiceImpl();
+
+        AppConfig appConfig = new AppConfig();
+        MemberService memberService = appConfig.memberService();
 
         Member member = new Member(1L, "memberA", Grade.VIP);
         memberService.join(member);
