@@ -9,29 +9,30 @@ import dh0023.springcore.member.repository.MemoryMemberRepository;
 import dh0023.springcore.order.domain.Order;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService{
 
     // final은 반드시 값이 있어야한다.
     private final MemberRepository memberRepository;
     private final DiscountPolicy discountPolicy;
 
-    // 필드 주입
+    // 필드 주입rateDiscountPolicy
 //    @Autowired private MemberRepository memberRepository;
-//    @Autowired private DiscountPolicy discountPolicy;
+//    @Autowired private DiscountPolicy disRcountPolicy;
 
 
     // 생성자 의존관계 주입
-    /*
+    // rateDiscountPolicy의 경우 Primary이므로, @Qualifier 설정없이 주입 가능
+    // fixDiscountPolicy를 사용하고 싶으면 @Qualifier("fixDiscountPolicy")로 지정
     @Autowired
     public OrderServiceImpl(MemberRepository memberRepository, DiscountPolicy discountPolicy) {
         this.memberRepository = memberRepository;
         this.discountPolicy = discountPolicy;
     }
-    */
+
     // 수정자 의존관계 주입
     /*
     private  MemberRepository memberRepository;
