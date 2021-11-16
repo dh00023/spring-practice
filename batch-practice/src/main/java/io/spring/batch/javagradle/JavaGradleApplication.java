@@ -1,6 +1,7 @@
 package io.spring.batch.javagradle;
 
 import io.spring.batch.javagradle.incrementer.DailyJobTimestamper;
+import io.spring.batch.javagradle.validator.JobLoggerListener;
 import io.spring.batch.javagradle.validator.ParameterValidator;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParametersValidator;
@@ -44,6 +45,7 @@ public class JavaGradleApplication {
                 .start(step1())
                 .validator(validator())
                 .incrementer(new DailyJobTimestamper())
+                .listener(new JobLoggerListener())
 //                .incrementer(new RunIdIncrementer())
                 .next(step2())
                 .build(); // 실제 job 생성
