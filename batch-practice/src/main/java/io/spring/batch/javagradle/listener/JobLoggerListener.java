@@ -1,4 +1,4 @@
-package io.spring.batch.javagradle.validator;
+package io.spring.batch.javagradle.listener;
 
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.annotation.AfterJob;

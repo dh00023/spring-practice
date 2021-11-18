@@ -1,21 +1,19 @@
 package io.spring.batch.javagradle;
 
 import io.spring.batch.javagradle.incrementer.DailyJobTimestamper;
-import io.spring.batch.javagradle.validator.JobLoggerListener;
+import io.spring.batch.javagradle.listener.JobLoggerListener;
 import io.spring.batch.javagradle.validator.ParameterValidator;
 import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobParametersValidator;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.StepContribution;
+import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.CompositeJobParametersValidator;
 import org.springframework.batch.core.job.DefaultJobParametersValidator;
-import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.listener.ExecutionContextPromotionListener;
 import org.springframework.batch.core.listener.JobListenerFactoryBean;
-import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +38,7 @@ public class JavaGradleApplication {
      * 실제 스프링 배치 Job 생성
      */
     @Bean
-    public Job job() {
+    public Job basicJob() {
         // jobBuilderFactory.get("잡이름")
         return this.jobBuilderFactory.get("basicJob")
                 .start(step1())
@@ -54,6 +52,7 @@ public class JavaGradleApplication {
 
     /**
      * 실제 스프링 배치 step 생성
+     *
      * @return
      */
     @Bean
@@ -64,10 +63,13 @@ public class JavaGradleApplication {
                 .tasklet((contribution, chunkContext) -> {
                     System.out.println("Hello, world!");
                     return RepeatStatus.FINISHED;
-                }).build();
+                })
+                .listener(promotionListener()) // step이 완료 상태로 종료된 이후 수행
+                .build();
     }
 
-    @Bean Step step2(){
+    @Bean
+    Step step2() {
         return this.stepBuilderFactory.get("step2")
 //                .tasklet(chunkContextParamsTasklet())
                 .tasklet(lateBindingParamTasklet("test"))
@@ -78,8 +80,8 @@ public class JavaGradleApplication {
     public Tasklet chunkContextParamsTasklet() {
         return ((contribution, chunkContext) -> {
             String name = (String) chunkContext.getStepContext()
-                                .getJobParameters()
-                                .get("name");
+                    .getJobParameters()
+                    .get("name");
 
             System.out.println(String.format("Hello, %s", name));
             return RepeatStatus.FINISHED;
@@ -103,12 +105,27 @@ public class JavaGradleApplication {
         // 파라미터 유무 검증
         DefaultJobParametersValidator defaultJobParametersValidator = new DefaultJobParametersValidator();
 
-        defaultJobParametersValidator.setRequiredKeys(new String[] {"fileName"}); // 필수 파라미터 확인
-        defaultJobParametersValidator.setOptionalKeys(new String[] {"name", "run.id", "executionDate"}); // 선택 파라미터
+        defaultJobParametersValidator.setRequiredKeys(new String[]{"fileName"}); // 필수 파라미터 확인
+        defaultJobParametersValidator.setOptionalKeys(new String[]{"name", "run.id", "executionDate"}); // 선택 파라미터
         defaultJobParametersValidator.afterPropertiesSet(); // 선택 파라미터에 필수 파라미터가 포함되지 않았는지 확인
 
         validator.setValidators(Arrays.asList(new ParameterValidator(), defaultJobParametersValidator));
         return validator;
+    }
+
+    /**
+     * step이 완료 상태로 종료된 이후 수행
+     * "name" 키를 찾아 Job의 ExecutionContext에 복사
+     *
+     * @return
+     */
+    @Bean
+    public StepExecutionListener promotionListener() {
+        ExecutionContextPromotionListener listener = new ExecutionContextPromotionListener();
+
+        listener.setKeys(new String[]{"name"});
+
+        return listener;
     }
 
     public static void main(String[] args) {
