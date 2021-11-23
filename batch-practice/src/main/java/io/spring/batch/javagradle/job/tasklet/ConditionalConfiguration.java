@@ -1,4 +1,4 @@
-package io.spring.batch.javagradle.job;
+package io.spring.batch.javagradle.job.tasklet;
 
 import io.spring.batch.javagradle.decider.RandomDecider;
 import org.springframework.batch.core.Job;

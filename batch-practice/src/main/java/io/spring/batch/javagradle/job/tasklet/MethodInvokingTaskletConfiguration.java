@@ -1,4 +1,4 @@
-package io.spring.batch.javagradle.tasklet;
+package io.spring.batch.javagradle.job.tasklet;
 
 import io.spring.batch.javagradle.service.CustomerService;
 import org.springframework.batch.core.Job;

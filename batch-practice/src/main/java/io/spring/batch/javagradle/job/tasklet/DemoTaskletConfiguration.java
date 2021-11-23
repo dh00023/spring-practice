@@ -1,11 +1,12 @@
-package io.spring.batch.javagradle.job;
+package io.spring.batch.javagradle.job.tasklet;
 
-import io.spring.batch.javagradle.tasklet.HelloWorld;
+import io.spring.batch.javagradle.tasklet.ExploringTasklet;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -13,33 +14,34 @@ import org.springframework.context.annotation.Configuration;
 
 @EnableBatchProcessing
 @Configuration
-public class BatchConfiguration {
-
+public class DemoTaskletConfiguration {
     @Autowired
     private JobBuilderFactory jobBuilderFactory;
 
     @Autowired
     private StepBuilderFactory stepBuilderFactory;
 
-    /**
-     * 실제 스프링 배치 Job 생성
-     */
+    @Autowired
+    private JobExplorer jobExplorer;
+
     @Bean
-    public Job simpleJob() {
-        return this.jobBuilderFactory.get("simpleJob")
-                .start(step())
+    public Tasklet explorerTasklet() {
+        return new ExploringTasklet(this.jobExplorer);
+    }
+
+    @Bean
+    public Step explorerStep() {
+        return this.stepBuilderFactory.get("explorerStep")
+                .tasklet(explorerTasklet())
                 .build();
     }
 
     @Bean
-    public Step step() {
-        return this.stepBuilderFactory.get("step")
-                .tasklet(helloWorldTasklet())
+    public Job explorerJob() {
+        return this.jobBuilderFactory.get("explorerJob")
+                .start(explorerStep())
                 .build();
     }
 
-    @Bean
-    public Tasklet helloWorldTasklet() {
-        return new HelloWorld();
-    }
+
 }

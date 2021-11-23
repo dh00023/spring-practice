@@ -1,4 +1,4 @@
-package io.spring.batch.javagradle.chunk;
+package io.spring.batch.javagradle.job.chunk;
 
 import io.spring.batch.javagradle.listener.LoggingStepStartStopListener;
 import io.spring.batch.javagradle.policy.RandomChunkSizePolicy;

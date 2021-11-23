@@ -1,4 +1,4 @@
-package io.spring.batch.javagradle.tasklet;
+package io.spring.batch.javagradle.job.tasklet;
 
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
