@@ -44,10 +44,10 @@ public class ChunkBasedConfiguration {
     @Bean
     public Step chunkStep() {
         return this.stepBuilderFactory.get("chunkStep")
-                .<String, String> chunk(randomChunkSizePolicy()) // completePolicy 호출
+                .<String, String> chunk(simpleCompletionPolicy()) // completePolicy 호출
+                .listener(new LoggingStepStartStopListener())
                 .reader(itemReader())
                 .writer(itemWriter())
-                .listener(new LoggingStepStartStopListener())
                 .build();
     }
 

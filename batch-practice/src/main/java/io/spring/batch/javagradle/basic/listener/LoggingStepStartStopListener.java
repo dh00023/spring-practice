@@ -17,5 +17,6 @@ public class LoggingStepStartStopListener {
     public ExitStatus afterStep(StepExecution stepExecution) {
         System.out.println(stepExecution.getStepName() + " 종료");
         return stepExecution.getExitStatus();
+//        return ExitStatus.FAILED;
     }
 }

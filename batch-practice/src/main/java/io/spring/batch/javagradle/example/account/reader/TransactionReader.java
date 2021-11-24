@@ -39,6 +39,7 @@ public class TransactionReader implements ItemStreamReader<Transaction> {
                 result.setAccountNumber(fieldSet.readString(0));
                 result.setTimestamp(fieldSet.readDate(1, "yyyy-MM-DD HH:mm:ss"));
                 result.setAmount(fieldSet.readDouble(2));
+                System.out.println(result.toString());
                 recourdCount++;
             } else {
                 expectedRecordCount = fieldSet.readInt(0);
@@ -52,7 +53,7 @@ public class TransactionReader implements ItemStreamReader<Transaction> {
      *
      * @param stepExecution
      * @return expectedRecordCount(파일 푸터에 있는 수) == recourdCount(읽어들인 레코드 수) : stepExecution.getExitStatus()
-     *         expectedRecordCount(파일 푸터에 있는 수) != recourdCount(읽어들인 레코드 수) : ExitStatus.STOPPED
+     * expectedRecordCount(파일 푸터에 있는 수) != recourdCount(읽어들인 레코드 수) : ExitStatus.STOPPED
      */
     @AfterStep
     public ExitStatus afterStep(StepExecution stepExecution) {
