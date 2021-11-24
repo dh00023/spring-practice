@@ -1,8 +1,8 @@
 package io.spring.batch.javagradle;
 
-import io.spring.batch.javagradle.incrementer.DailyJobTimestamper;
-import io.spring.batch.javagradle.listener.JobLoggerListener;
-import io.spring.batch.javagradle.validator.ParameterValidator;
+import io.spring.batch.javagradle.basic.incrementer.DailyJobTimestamper;
+import io.spring.batch.javagradle.basic.listener.JobLoggerListener;
+import io.spring.batch.javagradle.basic.validator.ParameterValidator;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.StepExecutionListener;
