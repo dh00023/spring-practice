@@ -19,4 +19,6 @@ public class Customer {
     private String state;
     private String zipCode;
 
+    private String address; // customAddressMapper
+
 }

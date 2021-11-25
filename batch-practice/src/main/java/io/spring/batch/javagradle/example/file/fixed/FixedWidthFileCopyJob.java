@@ -17,6 +17,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.PathResource;
 
+/**
+ * --job.name=fixedWidthFileJob customerFile=src/main/resources/input/customerFixedWidth.txt
+ */
 @EnableBatchProcessing
 @Configuration
 public class FixedWidthFileCopyJob {
