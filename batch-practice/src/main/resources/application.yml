@@ -18,3 +18,7 @@ spring:
   config:
     activate:
       on-profile: local
+#logging:
+#  level:
+#    org:
+#      springframework:

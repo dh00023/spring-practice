@@ -96,7 +96,9 @@ public class TransactionProcessingJob {
     @Bean
     public Step importTransactionFileStep() {
         return this.stepBuilderFactory.get("importTransactionFileStep")
-                .<Transaction, Transaction>chunk(100) // chunk 기반
+//                .startLimit(1) // 지정한 limit count만큼 수행 가능하고, 그 이후는 실패 ->  Maximum start limit exceeded for step: importTransactionFileStepStartMax: 1
+                .allowStartIfComplete(true) // 완료 상태이더라도 실행할 수 있게 허용. 기본 구성을 재정의하여, 완료된 스텝을 두번 이상 실행할 수 있음
+                .<Transaction, Transaction>chunk(3) // chunk 기반
                 .reader(transactionReader())
                 .writer(transactionWriter(null))
                 .allowStartIfComplete(true) // 완료 후 재시작 여부
@@ -161,7 +163,7 @@ public class TransactionProcessingJob {
     @Bean
     public Step applyTransactionsStep() {
         return this.stepBuilderFactory.get("applyTransactionsStep")
-                .<AccountSummary, AccountSummary>chunk(100)
+                .<AccountSummary, AccountSummary>chunk(3)
                 .reader(accountSummaryReader(null))
                 .processor(transactionApplierProcessor())
                 .writer(accountSummaryWriter(null))
@@ -196,7 +198,7 @@ public class TransactionProcessingJob {
     @Bean
     public Step generateAccountSummaryStep() {
         return this.stepBuilderFactory.get("generateAccountSummaryStep")
-                .<AccountSummary, AccountSummary>chunk(100)
+                .<AccountSummary, AccountSummary>chunk(3)
                 .reader(accountSummaryReader(null))
                 .writer(accountSummaryFileWriter(null))
                 .build();
@@ -208,7 +210,7 @@ public class TransactionProcessingJob {
         // beforeStep으로 stepExecution을 사용하고,
         // etTerminateOnly()를 사용함으로써 트랜지션에 필요한 구성을 지울 수 있어 더 깔끔함.
         return this.jobBuilderFactory.get("transactionJob")
-                .preventRestart()
+//                .preventRestart() // job을 다시 시작할 수 없도록 막아준다. -> JobInstance already exists and is not restartable
                 .start(importTransactionFileStep())
                 .next(applyTransactionsStep())
                 .next(generateAccountSummaryStep())

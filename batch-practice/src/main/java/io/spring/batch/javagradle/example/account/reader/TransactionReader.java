@@ -31,6 +31,14 @@ public class TransactionReader implements ItemStreamReader<Transaction> {
 
     @Override
     public Transaction read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+
+        // Job 실패 테스트를 위해 임의로 오류 발생시키기
+        // and the following status: [FAILED]
+        // FAILED로 끝난 지점부터 이어서 실행된다.
+        // ex) chunk 수가 3이면, 실패한 두번째 청크부터 수행
+        if (this.recourdCount == 8) {
+            throw new ParseException("This isn't what I hoped to happen");
+        }
         return process(fieldSetReader.read());
     }
 
