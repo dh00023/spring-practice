@@ -21,14 +21,6 @@ public class TransactionDaoSupport extends JdbcTemplate implements TransactionDa
                         "from transaction t inner join account_summary a on " +
                         "a.id = t.account_summary_id " +
                         "where a.account_number = ?",
-//                new RowMapper<Transaction>() {
-//                    @Override
-//                    public Transaction mapRow(ResultSet rs, int rowNum) throws SQLException {
-//                        Transaction transaction = new Transaction();
-//                        transaction.setAmount(rs.getDouble("amount"));
-//                        transaction.setTimestamp(rs.getDate("timestamp"));
-//                    }
-//                } { accountNumber },
                 (rs, rowNum) -> {
                     Transaction trans = new Transaction();
                     trans.setAmount(rs.getDouble("amount"));

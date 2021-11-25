@@ -204,19 +204,22 @@ public class TransactionProcessingJob {
 
     @Bean
     public Job transactionJob() {
-//        return this.jobBuilderFactory.get("transactionJob")
-//                .preventRestart()
-//                .start(importTransactionFileStep())
-//                .next(applyTransactionsStep())
-//                .next(generateAccountSummaryStep())
-//                .build();
-		return this.jobBuilderFactory.get("transactionJob")
-				.start(importTransactionFileStep())
-				.on("STOPPED").stopAndRestart(importTransactionFileStep())
-				.from(importTransactionFileStep()).on("*").to(applyTransactionsStep())
-				.from(applyTransactionsStep()).next(generateAccountSummaryStep())
-				.end()
-				.build();
+
+        // beforeStep으로 stepExecution을 사용하고,
+        // etTerminateOnly()를 사용함으로써 트랜지션에 필요한 구성을 지울 수 있어 더 깔끔함.
+        return this.jobBuilderFactory.get("transactionJob")
+                .preventRestart()
+                .start(importTransactionFileStep())
+                .next(applyTransactionsStep())
+                .next(generateAccountSummaryStep())
+                .build();
+//		return this.jobBuilderFactory.get("transactionJob")
+//				.start(importTransactionFileStep())
+//				.on("STOPPED").stopAndRestart(importTransactionFileStep())
+//				.from(importTransactionFileStep()).on("*").to(applyTransactionsStep())
+//				.from(applyTransactionsStep()).next(generateAccountSummaryStep())
+//				.end()
+//				.build();
     }
 
 //    public static void main(String[] args) {

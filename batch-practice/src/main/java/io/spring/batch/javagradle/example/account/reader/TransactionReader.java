@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.AfterStep;
+import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.*;
 import org.springframework.batch.item.file.transform.FieldSet;
 
@@ -17,8 +18,11 @@ public class TransactionReader implements ItemStreamReader<Transaction> {
 
     @Setter
     private ItemStreamReader<FieldSet> fieldSetReader;
-    private int recourdCount;
-    private int expectedRecordCount;
+    private int recourdCount = 0;
+    private int expectedRecordCount =0;
+
+    // stepExecution을 사용해 Job을 중지 시킬 수 있다.
+    private StepExecution stepExecution;
 
     public TransactionReader(ItemStreamReader<FieldSet> fieldSetReader) {
         this.fieldSetReader = fieldSetReader;
@@ -43,19 +47,33 @@ public class TransactionReader implements ItemStreamReader<Transaction> {
                 recourdCount++;
             } else {
                 expectedRecordCount = fieldSet.readInt(0);
+
+                if (expectedRecordCount != this.recourdCount) {
+                    this.stepExecution.setTerminateOnly(); // setTeminateOnly() : 스텝이 완료된 후 배치 종료
+                }
             }
         }
         return result;
     }
 
     /**
+     * beforeStep으로 stepExecution을 가져온다.
+     * @param stepExecution
+     */
+    @BeforeStep
+    public void beforeStep(StepExecution stepExecution) {
+        this.stepExecution = stepExecution;
+    }
+    /**
      * step 완료시 수행
      *
      * @param stepExecution
      * @return expectedRecordCount(파일 푸터에 있는 수) == recourdCount(읽어들인 레코드 수) : stepExecution.getExitStatus()
      * expectedRecordCount(파일 푸터에 있는 수) != recourdCount(읽어들인 레코드 수) : ExitStatus.STOPPED
+     *
+     * 트랜지션을 별도로 구성하고 스텝의 ExitStatus를 재정의 해야함.
      */
-    @AfterStep
+//    @AfterStep
     public ExitStatus afterStep(StepExecution stepExecution) {
         if (recourdCount == expectedRecordCount) {
             return stepExecution.getExitStatus();
