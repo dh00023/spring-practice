@@ -2,13 +2,16 @@ package io.spring.batch.javagradle.example.file.common.domain;
 
 import lombok.*;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
-@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @ToString
+@XmlRootElement
 public class Customer {
 
     private Long id;
@@ -24,5 +27,11 @@ public class Customer {
     private String address; // customAddressMapper
 
     private List<Transaction> transactions;
+
+    @XmlElementWrapper(name = "transactions")
+    @XmlElement(name = "transaction")
+    public void setTransactions(List<Transaction> transactions) {
+        this.transactions = transactions;
+    }
 
 }
