@@ -2,6 +2,7 @@ package io.spring.batch.javagradle.example.file.delimited;
 
 import io.spring.batch.javagradle.example.file.common.domain.Customer;
 import io.spring.batch.javagradle.example.file.common.fieldmapper.CustomFieldSetMapper;
+import io.spring.batch.javagradle.example.file.common.tokenizer.CustomFileLineTokenizer;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -54,6 +55,17 @@ public class DelimitedFileCopyJob {
                         , "city", "state", "zipCode"}) // 각 컬럼명
 //                .targetType(Customer.class) // BeanWrapperFieldSetMapper 생성해 도메인 클레스에 값을 채움
                 .fieldSetMapper(new CustomFieldSetMapper()) // customMapper 설정
+                .build();
+    }
+
+    @Bean
+    @StepScope
+    public FlatFileItemReader<Customer> lineTokenizerCustomerItemReader(@Value("#{jobParameters['customerFile']}") PathResource inputFile) {
+        return new FlatFileItemReaderBuilder<Customer>()
+                .name("lineTokenizerCustomerItemReader")
+                .resource(inputFile)
+                .lineTokenizer(new CustomFileLineTokenizer()) // lineTokenzier Custom
+                .targetType(Customer.class) // BeanWrapperFieldSetMapper 생성해 도메인 클레스에 값을 채움
                 .build();
     }
 
