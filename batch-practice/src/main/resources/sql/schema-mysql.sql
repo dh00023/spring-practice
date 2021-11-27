@@ -18,3 +18,14 @@ CREATE  TABLE IF NOT EXISTS transaction (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
+
+CREATE TABLE CUSTOMER  (
+                           id BIGINT  NOT NULL PRIMARY KEY ,
+                           first_name VARCHAR(11) NOT NULL ,
+                           middle_initial VARCHAR(1),
+                           last_name VARCHAR(15) NOT NULL,
+                           address VARCHAR(45) NOT NULL,
+                           city VARCHAR(16) NOT NULL,
+                           state CHAR(2) NOT NULL,
+                           zip_code CHAR(5)
+);

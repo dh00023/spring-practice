@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-@XmlRootElement
+@XmlRootElement(name = "customer")
 public class Customer {
 
     private Long id;
