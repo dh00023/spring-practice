@@ -43,18 +43,11 @@ public class MethodInvokingTaskletConfiguration {
         // 다른 클래스 내의 메서드를 Tasklet처럼 실행 가능
         MethodInvokingTaskletAdapter methodInvokingTaskletAdapter = new MethodInvokingTaskletAdapter();
 
-        methodInvokingTaskletAdapter.setTargetObject(customerService()); // 호출할 메서드가 있는 객체
+        methodInvokingTaskletAdapter.setTargetObject(new CustomerService()); // 호출할 메서드가 있는 객체
         methodInvokingTaskletAdapter.setTargetMethod("serviceMethod"); // 호출할 메서드명
         methodInvokingTaskletAdapter.setArguments(new String[] {message});
 
         return methodInvokingTaskletAdapter;
     }
-
-    @Bean
-    public CustomerService customerService() {
-        return new CustomerService();
-    }
-
-
 
 }

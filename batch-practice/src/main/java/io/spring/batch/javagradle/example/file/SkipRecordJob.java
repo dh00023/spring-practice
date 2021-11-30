@@ -18,17 +18,17 @@ public class SkipRecordJob {
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
 
-    @Bean
-    public Step skipRecordCopyFileStep() {
-        return this.stepBuilderFactory.get("skipRecordCopyFileStep")
-                .<Customer, Customer>chunk(10)
-                .reader(null)
-                .writer(null)
-                .faultTolerant()
-                .skip(Exception.class)
-                .noSkip(ParseException.class)
-                .skipLimit(10)
-                .build();
-    }
+//    @Bean
+//    public Step skipRecordCopyFileStep() {
+//        return this.stepBuilderFactory.get("skipRecordCopyFileStep")
+//                .<Customer, Customer>chunk(10)
+//                .reader(null)
+//                .writer(null)
+//                .faultTolerant()
+//                .skip(Exception.class)
+//                .noSkip(ParseException.class)
+//                .skipLimit(10)
+//                .build();
+//    }
 
 }
