@@ -1,7 +1,10 @@
 package io.spring.batch.javagradle.example.file.delimited;
 
+import io.spring.batch.javagradle.example.file.common.classifier.ZipCodeClassifier;
 import io.spring.batch.javagradle.example.file.common.domain.Customer;
 import io.spring.batch.javagradle.example.file.common.fieldmapper.CustomFieldSetMapper;
+import io.spring.batch.javagradle.example.file.common.processor.EvenFilteringItemProcessor;
+import io.spring.batch.javagradle.example.file.common.service.UpperCaseNameService;
 import io.spring.batch.javagradle.example.file.common.tokenizer.CustomFileLineTokenizer;
 import io.spring.batch.javagradle.example.file.common.validator.UniqueLastNameValidator;
 import lombok.RequiredArgsConstructor;
@@ -12,19 +15,28 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.adapter.ItemProcessorAdapter;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
+import org.springframework.batch.item.support.ClassifierCompositeItemProcessor;
+import org.springframework.batch.item.support.CompositeItemProcessor;
+import org.springframework.batch.item.support.ScriptItemProcessor;
 import org.springframework.batch.item.validator.BeanValidatingItemProcessor;
 import org.springframework.batch.item.validator.ValidatingItemProcessor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.classify.Classifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.PathResource;
 import org.springframework.core.io.Resource;
 
+import java.util.Arrays;
+
 /**
  * --job.name=validationDelimitedFileJob customerFile=input/customer.csv
+ * --job.name=validationDelimitedFileJob customerFile=input/customer.csv script=script/lowerCase.js
  */
 @RequiredArgsConstructor
 @Configuration
@@ -32,6 +44,7 @@ public class ValidationDelimitedFileCopyJob {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
+    private final UpperCaseNameService upperCaseNameService;
 
     @Bean
     public Job validationDelimitedFileJob() {
@@ -44,11 +57,29 @@ public class ValidationDelimitedFileCopyJob {
         return this.stepBuilderFactory.get("validationDelimitedFileStep")
                 .<Customer, Customer>chunk(10)
                 .reader(validationDelimitedCustomerItemReader(null))
-                .processor(validationDelimitedCustomerProcessor()) // processor
-                .processor(customerValidatingItemProcessor())
+//                .processor(validationDelimitedCustomerProcessor()) // processor
+//                .processor(customerValidatingItemProcessor())
+//                .processor(customerItemProcessorAdapter())
+//                .processor(scriptItemProcessor(null))
+//                .processor(compositeItemProcessor())
+//                .processor(classifierCompositeItemProcessor())
+                .processor(new EvenFilteringItemProcessor())
                 .writer(validationDelimitedCustomerItemWriter())
                 .stream(uniqueLastNameValidator())
                 .build();
+    }
+
+
+    @Bean
+    public Classifier classifier() {
+        return new ZipCodeClassifier(customerItemProcessorAdapter(), scriptItemProcessor(null));
+    }
+
+    @Bean
+    public ClassifierCompositeItemProcessor<Customer, Customer> classifierCompositeItemProcessor() {
+        ClassifierCompositeItemProcessor<Customer, Customer> itemProcessor = new ClassifierCompositeItemProcessor<>();
+        itemProcessor.setClassifier(classifier());
+        return itemProcessor;
     }
 
     @Bean
@@ -65,6 +96,19 @@ public class ValidationDelimitedFileCopyJob {
                 .build();
     }
 
+    @Bean
+    public CompositeItemProcessor<Customer, Customer> compositeItemProcessor() {
+        CompositeItemProcessor<Customer, Customer> itemProcessor = new CompositeItemProcessor<>();
+
+        itemProcessor.setDelegates(Arrays.asList(
+                customerValidatingItemProcessor(),
+                customerItemProcessorAdapter(),
+                scriptItemProcessor(null)
+        ));
+
+        return itemProcessor;
+    }
+
     /**
      * BeanValidationItemProcessor 설정
      * @return
@@ -77,6 +121,24 @@ public class ValidationDelimitedFileCopyJob {
     @Bean
     public ValidatingItemProcessor<Customer> customerValidatingItemProcessor() {
         return new ValidatingItemProcessor<>(uniqueLastNameValidator());
+    }
+
+    @Bean
+    public ItemProcessorAdapter<Customer, Customer> customerItemProcessorAdapter() {
+        ItemProcessorAdapter<Customer, Customer> adapter = new ItemProcessorAdapter<>();
+        adapter.setTargetObject(upperCaseNameService);
+        adapter.setTargetMethod("upperCase");
+        return adapter;
+    }
+
+    @Bean
+    @StepScope
+    public ScriptItemProcessor<Customer, Customer> scriptItemProcessor(@Value("#{jobParameters['script']}") Resource script) {
+        ScriptItemProcessor<Customer, Customer> itemProcessor = new ScriptItemProcessor<>();
+
+        itemProcessor.setScript(script);
+
+        return itemProcessor;
     }
 
     @Bean

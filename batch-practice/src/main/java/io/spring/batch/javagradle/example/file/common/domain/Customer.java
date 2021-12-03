@@ -57,4 +57,16 @@ public class Customer {
         this.transactions = transactions;
     }
 
+    public Customer(Customer customer) {
+        this.zipCode = customer.getZipCode();
+        this.lastName = customer.getLastName();
+        this.firstName = customer.getFirstName();
+        this.address = customer.getAddress();
+        this.state = customer.getState();
+        this.city = customer.getCity();
+        this.middleInitial = customer.getMiddleInitial();
+        this.addressNumber = customer.getAddressNumber();
+        this.street = customer.getStreet();
+    }
+
 }
