@@ -12,7 +12,7 @@ spring:
   batch:
     job:
 #      enabled: false #어플리케이션 구동시 컨텍스트 내의 모든 스프링 배치 작업 자동 실행 여부
-      names: ${job.name:EMPTY} # argument로 전달하는 job 수행
+      names: ${job.name:NONE} # argument로 전달하는 job 수행
 #    jdbc:
 #      initialize-schema: always # 스프링 부트가 스프링 배치 스키마 스크립트를 실행하도록 지시
   config:
