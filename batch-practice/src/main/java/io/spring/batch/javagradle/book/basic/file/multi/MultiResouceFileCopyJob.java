@@ -68,7 +68,6 @@ public class MultiResouceFileCopyJob {
     }
 
     @Bean
-    @StepScope
     public FlatFileItemReader multiResourceCustomerItemReader() {
         return new FlatFileItemReaderBuilder<Customer>()
                 .name("multiResourceCustomerItemReader")
