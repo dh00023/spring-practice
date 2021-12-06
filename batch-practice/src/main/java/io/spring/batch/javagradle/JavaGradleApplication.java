@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Bean;
 
 import java.util.Arrays;
 
-@EnableBatchProcessing // 배치 작업에 필요한 빈을 미리 등록하여 사용, 애플리케이션 내 한번만 적용하면 됨.
+//@EnableBatchProcessing // 배치 작업에 필요한 빈을 미리 등록하여 사용, 애플리케이션 내 한번만 적용하면 됨.
 @SpringBootApplication
 public class JavaGradleApplication {
 
@@ -129,6 +129,7 @@ public class JavaGradleApplication {
     }
 
     public static void main(String[] args) {
+
         SpringApplication.run(JavaGradleApplication.class, args);
     }
 }

@@ -48,4 +48,5 @@ public class CustomBatchConfigurer extends DefaultBatchConfigurer {
         jobExplorerFactoryBean.afterPropertiesSet();
         return jobExplorerFactoryBean.getObject();
     }
+
 }

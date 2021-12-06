@@ -11,6 +11,7 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
@@ -23,6 +24,7 @@ import javax.sql.DataSource;
  */
 @RequiredArgsConstructor
 @Configuration
+@ConditionalOnProperty(name = "spring.batch.job.name", havingValue = "jdbcCursorItemReaderJob")
 public class JdbcCursorCustomerJob {
 
     private final JobBuilderFactory jobBuilderFactory;
@@ -30,7 +32,7 @@ public class JdbcCursorCustomerJob {
     private final DataSource dataSource;
 
     @Bean
-    public Job jdbcCursorItemReaderJob(){
+    public Job job(){
         return jobBuilderFactory.get("jdbcCursorItemReaderJob")
                 .start(jdbcCursorItemReaderStep())
                 .build();
