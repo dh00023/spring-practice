@@ -19,7 +19,7 @@ public class AccountItemProcessor implements ItemProcessor<Nstatement, Nstatemen
                 ", t.transaction_id, t.description, t.credit, t.debit, t.timestamp " +
                 "from naccount a left join ntransaction t on a.account_id = t.account_account_id " +
                 "where a.account_id in (select account_account_id from ncustomer_account where customer_customer_id = ?) " +
-                "order by t.timestamp", new AccountResultSetExtractor(), new Object[]{item.getCustomer().getCustomerId()}));
+                "order by t.timestamp", new AccountResultSetExtractor(), new Object[]{item.getCustomer().getId()}));
         return item;
     }
 }

@@ -5,19 +5,10 @@ spring:
 ---
 spring:
   datasource:
-#    hikari:
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://localhost:3306/spring_batch
-      username: spring
-      password: Springtest2021!
-
-  #    hikari:
-#      jdbc-url: jdbc:h2:mem:jojoldu;MODE=MYSQL
-#      username: sa
-#      password:
-#      driver-class-name: org.h2.Driver
-#      auto-commit: false
-#      maximumPoolSize: 10
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/spring_batch
+    username: spring
+    password: Springtest2021!
   batch:
     job:
 #      enabled: false #어플리케이션 구동시 컨텍스트 내의 모든 스프링 배치 작업 자동 실행 여부
@@ -32,14 +23,13 @@ spring:
     properties:
       hibernate:
 #        allow_update_outside_transaction: true
-#        current_session_context_class: org.springframework.orm.hibernate5.SpringSessionContext
+        current_session_context_class: org.springframework.orm.hibernate5.SpringSessionContext
 #  # 카멜 표기법을 사용하는 경우 다음과 같이 지정
 #    hibernate:
 #      naming:
 #        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
 #        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-
 logging:
   level:
     org:
-      springframework: debug
+      springframework: info

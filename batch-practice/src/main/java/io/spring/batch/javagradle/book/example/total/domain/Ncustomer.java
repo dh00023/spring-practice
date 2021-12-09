@@ -1,32 +1,27 @@
 package io.spring.batch.javagradle.book.example.total.domain;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
-import javax.persistence.*;
-
-@NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter @Setter
-@Entity // 매핑할 객체가 Entity임을 나타냄
-@Table(name = "ncustomer") // Entityrㅏ 매핑되는 테이블 지정
 public class Ncustomer {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long customerId;
-    private String firstName;
-    private String middleName;
-    private String lastName;
-    private String address1;
-    private String address2;
-    private String city;
-    private String state;
-    private String postalCode;
-    private String ssn;
-    private String emailAddress;
-    private String homePhone;
-    private String cellPhone;
-    private String workPhone;
-    private int notificationPreferences;
+    private final long id;
+    private final String firstName;
+    private final String middleName;
+    private final String lastName;
+    private final String address1;
+    private final String address2;
+    private final String city;
+    private final String state;
+    private final String postalCode;
+    private final String ssn;
+    private final String emailAddress;
+    private final String homePhone;
+    private final String cellPhone;
+    private final String workPhone;
+    private final int notificationPreferences;
 
 }
