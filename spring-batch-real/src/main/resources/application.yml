@@ -1,0 +1,41 @@
+spring:
+  batch:
+    job:
+      names: ${job.name:NONE} # argument? ???? job ??
+  config:
+    activate:
+      on-profile: local
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      format_sql: true
+      ddl-auto: none
+
+databases:
+  mysql:
+    first:
+      jdbc-url: jdbc:mysql://localhost:3306/spring_batch
+      username: spring
+      password: Springtest2021!
+      driver-class-name: com.mysql.cj.jdbc.Driver
+    second:
+      jdbc-url: jdbc:mysql://localhost:3306/practice
+      username: spring
+      password: Springtest2021!
+      driver-class-name: com.mysql.cj.jdbc.Driver
+
+mybatis:
+  mapper-locations: classpath*:**/mapper/*.xml
+
+feign:
+  hystrix:
+    enabled: true
+  client:
+    config:
+      default:
+        connectionTimeout: 15000
+        readTimeout: 15000
+        loggerLevel: FULL
