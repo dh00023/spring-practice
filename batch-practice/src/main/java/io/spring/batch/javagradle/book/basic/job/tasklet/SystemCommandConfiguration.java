@@ -1,5 +1,6 @@
 package io.spring.batch.javagradle.book.basic.job.tasklet;
 
+import io.spring.batch.javagradle.book.basic.configurer.BasicBatchConfigurer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
@@ -9,8 +10,10 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.step.tasklet.ConfigurableSystemProcessExitCodeMapper;
 import org.springframework.batch.core.step.tasklet.SimpleSystemProcessExitCodeMapper;
 import org.springframework.batch.core.step.tasklet.SystemCommandTasklet;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 
 import java.util.HashMap;
@@ -18,6 +21,8 @@ import java.util.Map;
 
 @Configuration
 @RequiredArgsConstructor
+@Import(BasicBatchConfigurer.class)
+@ConditionalOnProperty(name = "spring.batch.job.names", havingValue = "systemCommandJob")
 public class SystemCommandConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
