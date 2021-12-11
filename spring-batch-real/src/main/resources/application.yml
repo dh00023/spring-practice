@@ -1,32 +1,47 @@
 spring:
   batch:
     job:
-      names: ${job.name:NONE} # argument? ???? job ??
-  config:
-    activate:
-      on-profile: local
+      names: ${job.name:NONE}
   jpa:
-    database: mysql
-    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
-    open-in-view: false
-    show-sql: true
+    show-sql: false
     hibernate:
       format_sql: true
       ddl-auto: none
 
 databases:
   mysql:
-    first:
-      jdbc-url: jdbc:mysql://localhost:3306/spring_batch
-      username: spring
-      password: Springtest2021!
-      driver-class-name: com.mysql.cj.jdbc.Driver
-    second:
-      jdbc-url: jdbc:mysql://localhost:3306/practice
-      username: spring
-      password: Springtest2021!
-      driver-class-name: com.mysql.cj.jdbc.Driver
-
+    properties:
+      hibernate.show_sql: false
+      hibernate.hbm2ddl.auto: none
+      hibernate.default_batch_fetch_size: ${chunkSize:100}
+      hibernate.dialect: org.hibernate.dialect.MySQL57Dialect
+    datasource:
+      hikari:
+        jdbc-url: jdbc:mysql://localhost:3306/spring_batch
+        username: spring
+        password: Springtest2021!
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        maximumPoolSize: 10
+  postgre:
+    properties:
+      hibernate.show_sql: false
+      hibernate.hbm2ddl.auto: none
+      hibernate.default_batch_fetch_size: ${chunkSize:100}
+    datasource:
+      hikari:
+        jdbc-url: jdbc:postgresql://localhost:5432/spring
+        username: test
+        password: test!
+        driver-class-name: org.postgresql.Driver
+        maximum-pool-size: 10 # pool에 유지할 최대 connection 수
+  mysql-practice:
+    datasource:
+      hikari:
+        jdbc-url: jdbc:mysql://localhost:3306/practice
+        username: spring
+        password: Springtest2021!
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        maximumPoolSize: 10
 mybatis:
   mapper-locations: classpath*:**/mapper/*.xml
 
@@ -39,3 +54,8 @@ feign:
         connectionTimeout: 15000
         readTimeout: 15000
         loggerLevel: FULL
+
+logging:
+  level:
+    org:
+      springframework: debug

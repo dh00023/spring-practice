@@ -10,37 +10,35 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import javax.sql.DataSource;
 
 @Slf4j
-@Import(MysqlBaseConfig.class)
+@Import(PostgreBaseConfig.class)
 @Configuration
-public class MysqlMybatisConfig {
+public class PostgreMybatisConfig {
 
-    public static final String MAIN_MYBATIS_SQL_SEESION_FACTORY = "mainMybatisSqlSessionFactory";
+    public static final String P_MYBATIS_SQL_SEESION_FACTORY = "postgreMybatisSqlSessionFactory";
+    public static final String P_MYBATIS_SQL_SEESION_TEMPLATE = "postgreMybatisSqlSessionTemplate";
 
 //    public static final String MYBATIS_READONLY_SEESION_FACTORY = "mainMybatisSqlSessionFactory";
-
 
     @Value("${mybatis.mapper-locations}")
     private String mapperLocations;
 
-    @Primary
-    @Bean(MAIN_MYBATIS_SQL_SEESION_FACTORY)
-    public SqlSessionFactory sessionFactory(@Qualifier(MysqlBaseConfig.MAIN_READER_DATASOURCE) DataSource dataSource, ApplicationContext applicationContext) throws Exception {
+    @Bean(P_MYBATIS_SQL_SEESION_FACTORY)
+    public SqlSessionFactory sessionFactory(@Qualifier(PostgreBaseConfig.POSTGRE_READER_DATASOURCE) DataSource dataSource, ApplicationContext applicationContext) throws Exception {
         SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
         sqlSessionFactoryBean.setDataSource(dataSource);
-        sqlSessionFactoryBean.setConfigLocation(applicationContext.getResource("classpath:mybatis/mybatis-mysql-config.xml"));
+        sqlSessionFactoryBean.setConfigLocation(applicationContext.getResource("classpath:mybatis/mybatis-postgre-config.xml"));
         sqlSessionFactoryBean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources(mapperLocations));
         return sqlSessionFactoryBean.getObject();
     }
 
-    @Bean
-    @Primary
-    public SqlSessionTemplate sqlSessionTemplate(@Qualifier(MAIN_MYBATIS_SQL_SEESION_FACTORY) SqlSessionFactory sqlsessionFactory) {
+
+    @Bean(P_MYBATIS_SQL_SEESION_TEMPLATE)
+    public SqlSessionTemplate sqlSessionTemplate(@Qualifier(P_MYBATIS_SQL_SEESION_FACTORY) SqlSessionFactory sqlsessionFactory) {
         return new SqlSessionTemplate(sqlsessionFactory);
     }
 }
