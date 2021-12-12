@@ -2,6 +2,7 @@ package dh0023.example.springbatchreal.jobs.multithread;
 
 import dh0023.example.springbatchreal.common.incremeter.UniqueRunIdIncrementer;
 import dh0023.example.springbatchreal.config.SpringBatchConfigurer;
+import dh0023.example.springbatchreal.jobs.multithread.listener.CursorItemReaderListener;
 import dh0023.example.springbatchreal.jobs.mybatis.dto.Ncustomer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,11 +12,15 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.batch.item.database.JdbcPagingItemReader;
 import org.springframework.batch.item.database.Order;
 import org.springframework.batch.item.database.PagingQueryProvider;
+import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
 import org.springframework.batch.item.database.builder.JdbcPagingItemReaderBuilder;
 import org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean;
+import org.springframework.batch.item.support.SynchronizedItemStreamReader;
+import org.springframework.batch.item.support.builder.SynchronizedItemStreamReaderBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -29,16 +34,16 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
-import static dh0023.example.springbatchreal.jobs.multithread.MultithreadPagingConfiguration.JOB_NAME;
+import static dh0023.example.springbatchreal.jobs.multithread.MultithreadCursorConfiguration.JOB_NAME;
 
 @Slf4j
 @Import(SpringBatchConfigurer.class)
 @Configuration
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "spring.batch.job.names", havingValue = JOB_NAME)
-public class MultithreadPagingConfiguration {
+public class MultithreadCursorConfiguration {
 
-    public static final String JOB_NAME = "multithreadPagingJob";
+    public static final String JOB_NAME = "multithreadCursorJob";
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -52,7 +57,7 @@ public class MultithreadPagingConfiguration {
      * poolSize, chunkSize를 알 수 있는 방법이 없음.
      */
 
-    @Value("${chunkSize:100}")
+    @Value("${chunkSize:10}")
     public void setChunkSize(int chunkSize) {
         this.chunkSize = chunkSize;
     }
@@ -65,7 +70,7 @@ public class MultithreadPagingConfiguration {
     @Bean(JOB_NAME)
     public Job job() {
         return this.jobBuilderFactory.get(JOB_NAME)
-                .incrementer(new RunIdIncrementer())
+                .incrementer(new UniqueRunIdIncrementer())
                 .start(step())
 //                .preventRestart()
                 .build();
@@ -76,7 +81,8 @@ public class MultithreadPagingConfiguration {
     public Step step() {
         return this.stepBuilderFactory.get(JOB_NAME + "Step")
                 .<Ncustomer, Ncustomer> chunk(chunkSize)
-                .reader(reader(null))
+                .reader(reader())
+                .listener(new CursorItemReaderListener()) // cursorItemReader는 데이터 읽기시 별도 로그를 남기지 않아 listener추가
                 .writer(writer())
                 .taskExecutor(executor())
                 .throttleLimit(poolSize) // default : 4, 생성된 쓰레드 중 몇개를 실제 작업에 사용할지 결정
@@ -103,15 +109,27 @@ public class MultithreadPagingConfiguration {
     }
 
     @Bean(JOB_NAME + "Reader")
-    public JdbcPagingItemReader<Ncustomer> reader(PagingQueryProvider pagingQueryProvider) {
+    public SynchronizedItemStreamReader<Ncustomer> reader() {
 
-        return new JdbcPagingItemReaderBuilder<Ncustomer>()
-                .name("customerJdbcPagingItemReader")   // Reader의 이름, ExecutionContext에 저장되어질 이름
+        String sql = "SELECT N.CUSTOMER_ID" +
+                ", CONCAT(N.LAST_NAME, ' ', N.FIRST_NAME) AS FULL_NAME\n" +
+                " , N.ADDRESS1 AS ADDRESS\n" +
+                ", N.POSTAL_CODE\n" +
+                "FROM NCUSTOMER N\n" +
+                "ORDER BY CUSTOMER_ID " +
+                "LIMIT 55";
+        log.info(sql);
+
+        JdbcCursorItemReader itemReader =  new JdbcCursorItemReaderBuilder<Ncustomer>()
+                .name(JOB_NAME + "Reader")   // Reader의 이름, ExecutionContext에 저장되어질 이름
                 .dataSource(dataSource)                 // DB에 접근하기 위해 사용할 DataSource객체
-                .queryProvider(pagingQueryProvider)     // PagingQueryProvider
-                .pageSize(10)                           // 각 페이지 크기
                 .rowMapper(new BeanPropertyRowMapper<>(Ncustomer.class)) // 쿼리 결과를 인스턴스로 매핑하기 위한 매퍼
+                .sql(sql)
                 .saveState(false)                       // Reader가 실패한 지점을 저장하지 않도록 설정
+                .build();
+
+        return new SynchronizedItemStreamReaderBuilder<Ncustomer>()
+                .delegate(itemReader)
                 .build();
     }
 
@@ -120,20 +138,4 @@ public class MultithreadPagingConfiguration {
         log.debug("start writer");
         return (items) -> items.forEach(System.out::println);
     }
-
-    @Bean
-    public SqlPagingQueryProviderFactoryBean pagingQueryProvider(){
-        SqlPagingQueryProviderFactoryBean queryProvider = new SqlPagingQueryProviderFactoryBean();
-        queryProvider.setDataSource(dataSource); // 제공된 데이터베이스의 타입을 결정(setDatabaseType 으로 데이터베이스 타입 설정도 가능)
-        queryProvider.setSelectClause("*");
-        queryProvider.setFromClause("from ncustomer");
-
-        Map<String, Order> sortKeys = new HashMap<>();
-        sortKeys.put("customer_id", Order.ASCENDING);
-
-        queryProvider.setSortKeys(sortKeys);
-
-        return queryProvider;
-    }
-
 }
