@@ -9,6 +9,7 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JdbcPagingItemReader;
 import org.springframework.batch.item.database.Order;
@@ -64,8 +65,8 @@ public class MultithreadPagingConfiguration {
     @Bean(JOB_NAME)
     public Job job() {
         return this.jobBuilderFactory.get(JOB_NAME)
+                .incrementer(new RunIdIncrementer())
                 .start(step())
-                .incrementer(new UniqueRunIdIncrementer())
 //                .preventRestart()
                 .build();
 
@@ -90,6 +91,13 @@ public class MultithreadPagingConfiguration {
         executor.setMaxPoolSize(poolSize); // 풀의 최대 사이즈
         executor.setThreadGroupName("multi-thread-");
         executor.setWaitForTasksToCompleteOnShutdown(Boolean.TRUE);
+
+        // allowCoreThreadTimeOut을 true로 설정해
+        // core thread 가 일정시간 태스크를 받지 않을 경우 pool 에서 정리하고,
+        // 모든 자식 스레드가 정리되면 jvm 도 종료 되게 설정한다.
+        executor.setKeepAliveSeconds(30);
+        executor.setAllowCoreThreadTimeOut(true);
+
         executor.initialize();
         return executor;
     }
@@ -103,6 +111,7 @@ public class MultithreadPagingConfiguration {
                 .queryProvider(pagingQueryProvider)     // PagingQueryProvider
                 .pageSize(10)                           // 각 페이지 크기
                 .rowMapper(new BeanPropertyRowMapper<>(Ncustomer.class)) // 쿼리 결과를 인스턴스로 매핑하기 위한 매퍼
+                .saveState(false)                       // Reader가 실패한 지점을 저장하지 않도록 설정
                 .build();
     }
 
