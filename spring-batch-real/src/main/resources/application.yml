@@ -11,10 +11,15 @@ spring:
 databases:
   mysql:
     properties:
-      hibernate.show_sql: false
-      hibernate.hbm2ddl.auto: none
-      hibernate.default_batch_fetch_size: ${chunkSize:100}
-      hibernate.dialect: org.hibernate.dialect.MySQL57Dialect
+      "[hibernate.show_sql]": false
+      "[hibernate.hbm2ddl.auto]": none
+      "[hibernate.default_batch_fetch_size]": ${chunkSize:100}
+      "[hibernate.dialect]": org.hibernate.dialect.MySQL57Dialect
+      "[hibernate.physical_naming_strategy]": org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+#      hibernate.show_sql: false
+#      hibernate.hbm2ddl.auto: none
+#      hibernate.default_batch_fetch_size: ${chunkSize:100}
+#      hibernate.dialect: org.hibernate.dialect.MySQL57Dialect
     datasource:
       hikari:
         jdbc-url: jdbc:mysql://localhost:3306/spring_batch
@@ -24,9 +29,10 @@ databases:
         maximumPoolSize: 10
   postgre:
     properties:
-      hibernate.show_sql: false
-      hibernate.hbm2ddl.auto: none
-      hibernate.default_batch_fetch_size: ${chunkSize:100}
+      "[hibernate.show_sql]": false
+      "[hibernate.hbm2ddl.auto]": none
+      "[hibernate.default_batch_fetch_size]": ${chunkSize:100}
+      "[hibernate.default_schema]": spring
     datasource:
       hikari:
         jdbc-url: jdbc:postgresql://localhost:5432/spring
@@ -58,4 +64,4 @@ feign:
 logging:
   level:
     org:
-      springframework: debug
+      springframework: info

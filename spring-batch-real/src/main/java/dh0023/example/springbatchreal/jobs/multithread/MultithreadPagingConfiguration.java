@@ -1,6 +1,5 @@
 package dh0023.example.springbatchreal.jobs.multithread;
 
-import dh0023.example.springbatchreal.common.incremeter.UniqueRunIdIncrementer;
 import dh0023.example.springbatchreal.config.SpringBatchConfigurer;
 import dh0023.example.springbatchreal.jobs.mybatis.dto.Ncustomer;
 import lombok.RequiredArgsConstructor;

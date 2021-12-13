@@ -33,7 +33,7 @@ import static dh0023.example.springbatchreal.config.db.MysqlJpaConfig.PACKAGE;
 @EnableConfigurationProperties({JpaProperties.class, HibernateProperties.class})
 @EnableJpaRepositories(basePackages = PACKAGE)
 public class MysqlJpaConfig {
-    private static final String PROPERTIES = "${databases.mysql.properties}";
+    private static final String PROPERTIES = "databases.mysql.properties";
 
     public static final String PACKAGE = "dh0023.example.springbatchreal";
     public static final String MAIN_ENTITY_MANAGER_FACTORY = "mainEntityManagerFactory";
@@ -42,8 +42,9 @@ public class MysqlJpaConfig {
     public static final String MAIN_TX_MANAGER = "mainTransactionManager";
 
 
-    @Value(PROPERTIES)
-    private HashMap<String, String> properties() {
+    @Bean
+    @ConfigurationProperties(PROPERTIES)
+    public HashMap<String, Object> properties() {
         return new HashMap<>();
     }
 
