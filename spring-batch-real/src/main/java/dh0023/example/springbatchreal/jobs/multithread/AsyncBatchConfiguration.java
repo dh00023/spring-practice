@@ -13,11 +13,16 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.flow.Flow;
+import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.integration.async.AsyncItemProcessor;
+import org.springframework.batch.integration.async.AsyncItemWriter;
+import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.batch.item.database.JdbcCursorItemReader;
-import org.springframework.batch.item.database.JpaCursorItemReader;
+import org.springframework.batch.item.database.*;
 import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
+import org.springframework.batch.item.database.builder.JdbcPagingItemReaderBuilder;
 import org.springframework.batch.item.database.builder.JpaCursorItemReaderBuilder;
+import org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -32,17 +37,20 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.Future;
 
-import static dh0023.example.springbatchreal.jobs.multithread.ParallelStepsConfiguration.JOB_NAME;
-
+import static dh0023.example.springbatchreal.jobs.multithread.AsyncBatchConfiguration.JOB_NAME;
 
 @Slf4j
 @Import(SpringBatchConfigurer.class)
 @Configuration
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "spring.batch.job.names", havingValue = JOB_NAME)
-public class ParallelStepsConfiguration {
-    public static final String JOB_NAME = "parallelSteps";
+public class AsyncBatchConfiguration {
+
+    public static final String JOB_NAME = "asyncBatchJob";
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -60,7 +68,7 @@ public class ParallelStepsConfiguration {
         // 쓰레드 풀을 이용한 쓰레드 관리 방식
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(5); // 풀의 기본 사이즈
-        executor.setMaxPoolSize(5); // 풀의 최대 사이즈
+        executor.setMaxPoolSize(10); // 풀의 최대 사이즈
         executor.setThreadNamePrefix("multi-thread-");
         executor.setWaitForTasksToCompleteOnShutdown(Boolean.TRUE);
 
@@ -86,13 +94,9 @@ public class ParallelStepsConfiguration {
                 .build();
 
 
-        Flow flow3 = new FlowBuilder<Flow>("flow3")
-                .start(step3())
-                .build();
-
         Flow parelleFlow = new FlowBuilder<Flow>("parelleFlow")
                 .split(executor())
-                .add(flow1, flow2, flow3)
+                .add(flow1, flow2)
                 .build();
 
         return this.jobBuilderFactory.get(JOB_NAME)
@@ -115,21 +119,10 @@ public class ParallelStepsConfiguration {
     @Bean(JOB_NAME + "AccountStep")
     public Step step2() {
         return this.stepBuilderFactory.get(JOB_NAME + "AccountStep")
-                .<Naccount, Naccount>chunk(chunkSize)
+                .<Naccount, Future<Naccount>>chunk(chunkSize)
                 .reader(jpaCursorItemReader())
-                .writer(naccountItemWriter())
-                .build();
-    }
-
-    @Bean
-    public Step step3() {
-        return stepBuilderFactory.get("sampleParallelStep1")
-                .tasklet((contribution, chunkContext) -> {
-                    for(int i = 1 ; i < 10000 ; i++) {
-                        log.info("[step] : " + i);
-                    }
-                    return RepeatStatus.FINISHED;
-                })
+                .processor(asyncItemProcessor())
+                .writer(asyncItemWriter())
                 .build();
     }
 
@@ -164,13 +157,34 @@ public class ParallelStepsConfiguration {
 
     @Bean(JOB_NAME + "Writer")
     public ItemWriter<Ncustomer> writer() {
-        log.info("start customer writer");
         return (items) -> items.forEach(System.out::println);
     }
 
+
+    @Bean
+    public AsyncItemProcessor<Naccount, Naccount> asyncItemProcessor() {
+        AsyncItemProcessor<Naccount, Naccount> processor = new AsyncItemProcessor<>();
+        processor.setDelegate(processor());
+        processor.setTaskExecutor(executor());
+        return processor;
+    }
+
+    @Bean(JOB_NAME + "AccountProcessor")
+    public ItemProcessor<Naccount, Naccount> processor() {
+        return (account)->{
+            Thread.sleep(5);; // 비동기 처리 이전 일부러 늦춤
+            return account;
+        };
+    }
+
+    @Bean
+    public AsyncItemWriter<Naccount> asyncItemWriter() {
+        AsyncItemWriter<Naccount> writer = new AsyncItemWriter<>();
+        writer.setDelegate(naccountItemWriter());
+        return writer;
+    }
     @Bean(JOB_NAME + "AccountWriter")
     public ItemWriter<Naccount> naccountItemWriter() {
-        log.debug("start account writer");
         return (items) -> items.forEach(System.out::println);
     }
 
