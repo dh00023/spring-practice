@@ -1,4 +1,4 @@
-package dh0023.example.springbatchreal.jobs.entity;
+package dh0023.example.springbatchreal.jobs.mysql.entity;
 
 
 import lombok.Getter;
@@ -6,9 +6,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 @NoArgsConstructor
 @Getter
@@ -22,6 +25,6 @@ public class Naccount {
     private Long accountId;
 
     private BigDecimal balance;
-    private Date lastStatementDate;
+    private LocalDate lastStatementDate;
 
 }

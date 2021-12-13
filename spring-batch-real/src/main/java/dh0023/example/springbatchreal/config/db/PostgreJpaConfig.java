@@ -9,7 +9,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -19,17 +18,19 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.HashMap;
 
-import static dh0023.example.springbatchreal.config.db.PostgreJpaConfig.PACKAGE;
+import static dh0023.example.springbatchreal.config.db.PostgreJpaConfig.*;
 
 
 @Configuration
 @RequiredArgsConstructor
 @EnableConfigurationProperties({JpaProperties.class, HibernateProperties.class})
-@EnableJpaRepositories(basePackages = PACKAGE)
+@EnableJpaRepositories(basePackages = PACKAGE
+        , entityManagerFactoryRef = P_ENTITY_MANAGER_FACTORY
+        , transactionManagerRef = P_TX_MANAGER)
 public class PostgreJpaConfig {
     private static final String PROPERTIES = "${databases.postgre.properties}";
 
-    public static final String PACKAGE = "dh0023.example.springbatchreal";
+    public static final String PACKAGE = "dh0023.example.springbatchreal.jobs.postgre";
     public static final String P_ENTITY_MANAGER_FACTORY = "postgreEntityManagerFactory";
     public static final String P_READER_ENTITY_MANAGER_FACTORY = "postgreReaderEntityManagerFactory";
 

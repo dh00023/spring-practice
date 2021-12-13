@@ -3,7 +3,7 @@ package dh0023.example.springbatchreal.jobs.multithread;
 import dh0023.example.springbatchreal.common.incremeter.UniqueRunIdIncrementer;
 import dh0023.example.springbatchreal.config.SpringBatchConfigurer;
 import dh0023.example.springbatchreal.config.db.PostgreBaseConfig;
-import dh0023.example.springbatchreal.jobs.entity.Naccount;
+import dh0023.example.springbatchreal.jobs.mysql.entity.Naccount;
 import dh0023.example.springbatchreal.jobs.mybatis.dto.Ncustomer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

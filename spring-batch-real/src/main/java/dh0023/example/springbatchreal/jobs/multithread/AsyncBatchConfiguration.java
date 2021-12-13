@@ -3,7 +3,7 @@ package dh0023.example.springbatchreal.jobs.multithread;
 import dh0023.example.springbatchreal.common.incremeter.UniqueRunIdIncrementer;
 import dh0023.example.springbatchreal.config.SpringBatchConfigurer;
 import dh0023.example.springbatchreal.config.db.PostgreBaseConfig;
-import dh0023.example.springbatchreal.jobs.entity.Naccount;
+import dh0023.example.springbatchreal.jobs.mysql.entity.Naccount;
 import dh0023.example.springbatchreal.jobs.mybatis.dto.Ncustomer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,17 +13,13 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.flow.Flow;
-import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.integration.async.AsyncItemProcessor;
 import org.springframework.batch.integration.async.AsyncItemWriter;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.*;
 import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
-import org.springframework.batch.item.database.builder.JdbcPagingItemReaderBuilder;
 import org.springframework.batch.item.database.builder.JpaCursorItemReaderBuilder;
-import org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean;
-import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,8 +33,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Future;
 
 import static dh0023.example.springbatchreal.jobs.multithread.AsyncBatchConfiguration.JOB_NAME;

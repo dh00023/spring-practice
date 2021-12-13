@@ -25,17 +25,19 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 
 import static dh0023.example.springbatchreal.config.db.MysqlBaseConfig.MAIN_READER_DATASOURCE;
-import static dh0023.example.springbatchreal.config.db.MysqlJpaConfig.PACKAGE;
+import static dh0023.example.springbatchreal.config.db.MysqlJpaConfig.*;
 
 
 @Configuration
 @RequiredArgsConstructor
 @EnableConfigurationProperties({JpaProperties.class, HibernateProperties.class})
-@EnableJpaRepositories(basePackages = PACKAGE)
+@EnableJpaRepositories(basePackages = PACKAGE
+        , entityManagerFactoryRef = MAIN_ENTITY_MANAGER_FACTORY
+        , transactionManagerRef = MAIN_TX_MANAGER)
 public class MysqlJpaConfig {
     private static final String PROPERTIES = "databases.mysql.properties";
 
-    public static final String PACKAGE = "dh0023.example.springbatchreal";
+    public static final String PACKAGE = "dh0023.example.springbatchreal.jobs.mysql";
     public static final String MAIN_ENTITY_MANAGER_FACTORY = "mainEntityManagerFactory";
     public static final String MAIN_READER_ENTITY_MANAGER_FACTORY = "mainReaderEntityManagerFactory";
 
