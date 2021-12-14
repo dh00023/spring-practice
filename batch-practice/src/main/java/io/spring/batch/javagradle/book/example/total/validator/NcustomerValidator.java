@@ -3,6 +3,7 @@ package io.spring.batch.javagradle.book.example.total.validator;
 import io.spring.batch.javagradle.book.example.total.domain.NcustomerUpdate;
 import org.springframework.batch.item.validator.ValidationException;
 import org.springframework.batch.item.validator.Validator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -13,12 +14,18 @@ import java.util.Map;
 @Component
 public class NcustomerValidator implements Validator<NcustomerUpdate> {
 
+    // binding시 문자열로 매핑
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    private static final String FIND_CUSTOMER_QUERY = "SELECT COUNT(*) FROM NCUSTOMER WHERE customer_id = :id";
+    public static final String FIND_CUSTOMER_QUERY = "SELECT COUNT(*) FROM NCUSTOMER WHERE customer_id = :id";
 
     public NcustomerValidator(DataSource dataSource) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+    }
+
+    @Autowired
+    public NcustomerValidator(NamedParameterJdbcTemplate template) {
+        this.jdbcTemplate = template;
     }
 
     @Override

@@ -9,11 +9,11 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -58,8 +58,8 @@ public class MultiThreadPagingConfiguration {
     @Bean(JOB_NAME)
     public Job job() {
         return this.jobBuilderFactory.get(JOB_NAME)
-                .incrementer(new RunIdIncrementer())
                 .start(step())
+                .incrementer(new RunIdIncrementer())
 //                .preventRestart()
                 .build();
 
@@ -69,7 +69,7 @@ public class MultiThreadPagingConfiguration {
     public Step step() {
         return this.stepBuilderFactory.get(JOB_NAME + "Step")
                 .<Customer, Customer> chunk(chunkSize)
-                .reader(reader())
+                .reader(reader(null))
                 .writer(writer())
                 .taskExecutor(executor())
                 .throttleLimit(poolSize) // default : 4, 생성된 쓰레드 중 몇개를 실제 작업에 사용할지 결정
@@ -89,12 +89,13 @@ public class MultiThreadPagingConfiguration {
     }
 
     @Bean(value = JOB_NAME + "Reader", destroyMethod = "")
-    public JpaPagingItemReader<Customer> reader() {
+    @StepScope
+    public JpaPagingItemReader<Customer> reader(@Value("#{jobParameters['city']}") String city) {
         return new JpaPagingItemReaderBuilder<Customer>()
                 .name(JOB_NAME + "Reader")
                 .entityManagerFactory(entityManagerFactory)
                 .pageSize(chunkSize)
-                .queryString("select c from Customer c")
+                .queryString("select c from Customer c where c.city=:city")
                 .saveState(false) // 쓰레드는 상태 보장이 안되므로 저장하지 않음
                 .build();
     }
