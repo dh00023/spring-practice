@@ -17,11 +17,14 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.test.context.ContextConfiguration;
@@ -79,47 +82,44 @@ class MysqlMybatisPagingUnitTest {
 
     @TestConfiguration
     public static class TestDataSourceConfig {
-        private static final String CREATE_SQL =
-                "CREATE TABLE ncustomer (\n" +
-                "\tcustomer_id integer NOT NULL PRIMARY KEY,\n" +
-                "\tfirst_name varchar(45) NOT NULL,\n" +
-                "\tmiddle_name varchar(45) NULL,\n" +
-                "\tlast_name varchar(45) NOT NULL,\n" +
-                "\taddress1 varchar(255) NOT NULL,\n" +
-                "\taddress2 varchar(255) NULL,\n" +
-                "\tcity varchar(50) NOT NULL,\n" +
-                "\tstate varchar(20) NOT NULL,\n" +
-                "\tpostal_code varchar(5) NOT NULL,\n" +
-                "\tssn varchar(11) NOT NULL,\n" +
-                "\temail_address varchar(255) NULL,\n" +
-                "\thome_phone varchar(12) NULL,\n" +
-                "\tcell_phone varchar(12) NULL,\n" +
-                "\twork_phone varchar(12) NULL,\n" +
-                "\tnotification_pref varchar(1) NOT NULL,\n" +
-                "\tCONSTRAINT ncustomer_pkey PRIMARY KEY (customer_id)\n" +
-                ");";
+//        private static final String CREATE_SQL =
+//                "CREATE TABLE ncustomer (\n" +
+//                "\tcustomer_id integer NOT NULL PRIMARY KEY,\n" +
+//                "\tfirst_name varchar(45) NOT NULL,\n" +
+//                "\tmiddle_name varchar(45) NULL,\n" +
+//                "\tlast_name varchar(45) NOT NULL,\n" +
+//                "\taddress1 varchar(255) NOT NULL,\n" +
+//                "\taddress2 varchar(255) NULL,\n" +
+//                "\tcity varchar(50) NOT NULL,\n" +
+//                "\tstate varchar(20) NOT NULL,\n" +
+//                "\tpostal_code varchar(5) NOT NULL,\n" +
+//                "\tssn varchar(11) NOT NULL,\n" +
+//                "\temail_address varchar(255) NULL,\n" +
+//                "\thome_phone varchar(12) NULL,\n" +
+//                "\tcell_phone varchar(12) NULL,\n" +
+//                "\twork_phone varchar(12) NULL,\n" +
+//                "\tnotification_pref varchar(1) NOT NULL,\n" +
+//                "\tCONSTRAINT ncustomer_pkey PRIMARY KEY (customer_id)\n" +
+//                ");";
 
         @Bean
         public DataSource dataSource() {
-           return DataSourceBuilder.create()
-                   .type(HikariDataSource.class)
-                    .driverClassName("org.h2.Driver")
-                    .url("jdbc:h2:mem:testdb;MODE=MYSQL;DATABASE_TO_LOWER=TRUE")
-                    .username("SA")
-                    .password("")
+            return new EmbeddedDatabaseBuilder()
+                    .setType(EmbeddedDatabaseType.H2)
+                    .addScript("/schema/test.sql")
                     .build();
         }
 
-        @Bean
-        public DataSourceInitializer initializer(DataSource dataSource) {
-            DataSourceInitializer dataSourceInitializer = new DataSourceInitializer();
-            dataSourceInitializer.setDataSource(dataSource);
-
-            Resource create = new ByteArrayResource(CREATE_SQL.getBytes());
-            dataSourceInitializer.setDatabasePopulator(new ResourceDatabasePopulator(create));
-
-            return dataSourceInitializer;
-        }
+//        @Bean
+//        public DataSourceInitializer initializer(DataSource dataSource) {
+//            DataSourceInitializer dataSourceInitializer = new DataSourceInitializer();
+//            dataSourceInitializer.setDataSource(dataSource);
+//
+//            Resource create = new ByteArrayResource(CREATE_SQL.getBytes());
+//            dataSourceInitializer.setDatabasePopulator(new ResourceDatabasePopulator(create));
+//
+//            return dataSourceInitializer;
+//        }
 
         @Bean
         public SqlSessionFactory sqlSessionFactory(DataSource dataSource, ApplicationContext applicationContext) throws Exception {
