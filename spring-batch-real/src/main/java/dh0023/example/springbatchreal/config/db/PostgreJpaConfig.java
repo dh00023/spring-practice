@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateProperties;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
@@ -28,7 +29,7 @@ import static dh0023.example.springbatchreal.config.db.PostgreJpaConfig.*;
         , entityManagerFactoryRef = P_ENTITY_MANAGER_FACTORY
         , transactionManagerRef = P_TX_MANAGER)
 public class PostgreJpaConfig {
-    private static final String PROPERTIES = "${databases.postgre.properties}";
+    private static final String PROPERTIES = "databases.postgre.properties";
 
     public static final String PACKAGE = "dh0023.example.springbatchreal.jobs.postgre";
     public static final String P_ENTITY_MANAGER_FACTORY = "postgreEntityManagerFactory";
@@ -37,8 +38,9 @@ public class PostgreJpaConfig {
     public static final String P_TX_MANAGER = "postgreTransactionManager";
 
 
-    @Value(PROPERTIES)
-    private HashMap<String, String> properties() {
+    @Bean
+    @ConfigurationProperties(PROPERTIES)
+    public HashMap<String, String> properties() {
         return new HashMap<>();
     }
 
@@ -61,11 +63,7 @@ public class PostgreJpaConfig {
                 .properties(properties())
                 .build();
     }
-//
-//    @ConfigurationProperties(prefix = "databases.mysql.hibernate.datasource.hikari")
-//    public HikariConfig hikariConfig() {
-//        return new HikariConfig();
-//    }
+
 
     @Bean(P_TX_MANAGER)
     public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {

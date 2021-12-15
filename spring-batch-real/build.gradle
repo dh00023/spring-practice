@@ -11,7 +11,7 @@ sourceCompatibility = '11'
 
 // mybatis용 targetClass추가
 sourceSets {
-    main.resources.srcDirs += ["src/main/java"]
+   main.resources.srcDirs += ["src/main/java"]
 }
 
 configurations {
@@ -34,8 +34,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-batch'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     implementation 'org.springframework.batch:spring-batch-integration'
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
     compileOnly 'org.projectlombok:lombok'
-    runtimeOnly 'com.h2database:h2'
+    testRuntimeOnly 'com.h2database:h2'
+    testCompileOnly 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:2.2.0'
     runtimeOnly 'mysql:mysql-connector-java'
     runtimeOnly 'org.postgresql:postgresql:42.3.1'
     annotationProcessor 'org.projectlombok:lombok'

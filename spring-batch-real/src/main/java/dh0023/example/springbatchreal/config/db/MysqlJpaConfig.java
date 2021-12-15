@@ -70,11 +70,6 @@ public class MysqlJpaConfig {
                 .properties(properties())
                 .build();
     }
-//
-//    @ConfigurationProperties(prefix = "databases.mysql.hibernate.datasource.hikari")
-//    public HikariConfig hikariConfig() {
-//        return new HikariConfig();
-//    }
 
     @Primary
     @Bean(MAIN_TX_MANAGER)

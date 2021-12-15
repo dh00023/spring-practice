@@ -21,9 +21,7 @@ import javax.sql.DataSource;
 public class MysqlMybatisConfig {
 
     public static final String MAIN_MYBATIS_SQL_SEESION_FACTORY = "mainMybatisSqlSessionFactory";
-
-//    public static final String MYBATIS_READONLY_SEESION_FACTORY = "mainMybatisSqlSessionFactory";
-
+    public static final String MAIN_SQL_SESSION_TEMPLATE = "mainSqlSessionTemplate";
 
     @Value("${mybatis.mapper-locations}")
     private String mapperLocations;
@@ -38,8 +36,8 @@ public class MysqlMybatisConfig {
         return sqlSessionFactoryBean.getObject();
     }
 
-    @Bean
     @Primary
+    @Bean(MAIN_SQL_SESSION_TEMPLATE)
     public SqlSessionTemplate sqlSessionTemplate(@Qualifier(MAIN_MYBATIS_SQL_SEESION_FACTORY) SqlSessionFactory sqlsessionFactory) {
         return new SqlSessionTemplate(sqlsessionFactory);
     }
