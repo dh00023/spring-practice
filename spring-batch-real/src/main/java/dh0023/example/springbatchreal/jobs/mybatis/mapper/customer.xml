@@ -14,4 +14,15 @@
         ]]>
 	</select>
 
+	<select id="getNcustomerForCursor" parameterType="hashmap" resultType="dh0023.example.springbatchreal.jobs.mybatis.dto.Ncustomer">
+	<![CDATA[
+		SELECT	N.CUSTOMER_ID
+			 , CONCAT(N.LAST_NAME, ' ', N.FIRST_NAME) AS FULL_NAME
+			 , N.ADDRESS1 AS ADDRESS
+			 , N.POSTAL_CODE
+		FROM	NCUSTOMER N
+		]]>
+	</select>
+
+
 </mapper>

@@ -1,4 +1,4 @@
-CREATE TABLE ncustomer  (
+CREATE TABLE IF NOT EXISTS ncustomer  (
                             customer_id integer  NOT NULL  PRIMARY KEY  ,
                             first_name VARCHAR(45) NOT NULL ,
                             middle_name VARCHAR(45),

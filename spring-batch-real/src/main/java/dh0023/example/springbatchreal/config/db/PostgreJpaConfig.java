@@ -38,7 +38,7 @@ public class PostgreJpaConfig {
     public static final String P_TX_MANAGER = "postgreTransactionManager";
 
 
-    @Bean
+    @Bean("postgreProperties")
     @ConfigurationProperties(PROPERTIES)
     public HashMap<String, String> properties() {
         return new HashMap<>();
