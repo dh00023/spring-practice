@@ -4,6 +4,7 @@ import dh0023.example.springbatchreal.config.db.MysqlMybatisConfig;
 import dh0023.example.springbatchreal.config.db.PostgreMybatisConfig;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +15,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import javax.sql.DataSource;
 
-@Configuration
+@TestConfiguration
 public class TestDataSourceConfig {
 
     /**

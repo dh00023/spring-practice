@@ -15,3 +15,9 @@ CREATE TABLE IF NOT EXISTS ncustomer  (
                             work_phone VARCHAR(12),
                             notification_pref CHAR(1) NOT NULL
 ) ;
+
+CREATE TABLE IF NOT EXISTS  naccount  (
+                           account_id BIGINT  NOT NULL AUTO_INCREMENT PRIMARY KEY  ,
+                           balance FLOAT NOT NULL ,
+                           last_statement_date TIMESTAMP NOT NULL
+) ;
