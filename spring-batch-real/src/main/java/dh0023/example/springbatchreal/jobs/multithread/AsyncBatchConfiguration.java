@@ -127,7 +127,7 @@ public class AsyncBatchConfiguration {
                 ", CONCAT(N.LAST_NAME, ' ', N.FIRST_NAME) AS FULL_NAME\n" +
                 " , N.ADDRESS1 AS ADDRESS " +
                 ", N.POSTAL_CODE " +
-                "FROM spring.\"ncustomer\" N " +
+                "FROM ncustomer N " +
                 "ORDER BY CUSTOMER_ID";
         log.info(sql);
 

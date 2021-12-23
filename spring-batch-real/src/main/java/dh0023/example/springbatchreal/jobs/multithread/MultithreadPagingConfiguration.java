@@ -50,7 +50,6 @@ public class MultithreadPagingConfiguration {
      * setter로 입력 받는 이유는 spring Context없이 테스트 코드 작성할때
      * poolSize, chunkSize를 알 수 있는 방법이 없음.
      */
-
     @Value("${chunkSize:100}")
     public void setChunkSize(int chunkSize) {
         this.chunkSize = chunkSize;

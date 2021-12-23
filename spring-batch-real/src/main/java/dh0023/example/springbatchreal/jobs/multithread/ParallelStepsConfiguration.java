@@ -125,7 +125,7 @@ public class ParallelStepsConfiguration {
     public Step step3() {
         return stepBuilderFactory.get("sampleParallelStep1")
                 .tasklet((contribution, chunkContext) -> {
-                    for(int i = 1 ; i < 10000 ; i++) {
+                    for(int i = 1 ; i < 1000 ; i++) {
                         log.info("[step] : " + i);
                     }
                     return RepeatStatus.FINISHED;
@@ -140,7 +140,7 @@ public class ParallelStepsConfiguration {
                 ", CONCAT(N.LAST_NAME, ' ', N.FIRST_NAME) AS FULL_NAME\n" +
                 " , N.ADDRESS1 AS ADDRESS " +
                 ", N.POSTAL_CODE " +
-                "FROM spring.\"ncustomer\" N " +
+                "FROM ncustomer N " +
                 "ORDER BY CUSTOMER_ID";
         log.info(sql);
 

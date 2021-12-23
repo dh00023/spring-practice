@@ -1,6 +1,7 @@
 package dh0023.example.springbatchreal.config;
 
 import dh0023.example.springbatchreal.config.db.MysqlMybatisConfig;
+import dh0023.example.springbatchreal.config.db.PostgreBaseConfig;
 import dh0023.example.springbatchreal.config.db.PostgreMybatisConfig;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
@@ -23,7 +24,17 @@ public class TestDataSourceConfig {
      * @return
      */
     @Bean
+    @Primary
     public DataSource dataSource() {
+        return new EmbeddedDatabaseBuilder()
+                .setType(EmbeddedDatabaseType.H2)
+                .addScript("/schema/test.sql")
+                .generateUniqueName(true) // Could not shut down embedded database 오류 해결
+                .build();
+    }
+
+    @Bean(PostgreBaseConfig.POSTGRE_READER_DATASOURCE)
+    public DataSource postgreDataSource() {
         return new EmbeddedDatabaseBuilder()
                 .setType(EmbeddedDatabaseType.H2)
                 .addScript("/schema/test.sql")
