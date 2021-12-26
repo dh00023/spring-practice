@@ -1,4 +1,4 @@
-package dh0023.example.springbatchreal.junit5;
+package dh0023.springtest.junit5;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

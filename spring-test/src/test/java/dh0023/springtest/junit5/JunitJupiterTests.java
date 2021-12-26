@@ -1,4 +1,4 @@
-package dh0023.example.springbatchreal.junit5;
+package dh0023.springtest.junit5;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
