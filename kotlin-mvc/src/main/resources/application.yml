@@ -1,1 +1,13 @@
-
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/spring
+    username: test
+    password: test!
+    driver-class-name: org.postgresql.Driver
+  redis:
+    host: 127.0.0.1
+    port: 6379
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create-drop
