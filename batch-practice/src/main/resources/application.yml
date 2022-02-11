@@ -1,0 +1,37 @@
+spring:
+  profiles:
+    active: local
+---
+spring:
+  datasource:
+    hikari:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://localhost:3306/spring_batch
+      username: spring
+      password: Springtest2021!
+      maximum-pool-size: 10
+      auto-commit: false
+  batch:
+    job:
+#      enabled: false #어플리케이션 구동시 컨텍스트 내의 모든 스프링 배치 작업 자동 실행 여부
+      names: ${job.name:NONE} # argument로 전달하는 job 수행
+#    jdbc:
+#      initialize-schema: always # 스프링 부트가 스프링 배치 스키마 스크립트를 실행하도록 지시
+  config:
+    activate:
+      on-profile: local
+
+  jpa:
+    properties:
+      hibernate:
+#        allow_update_outside_transaction: true
+        current_session_context_class: org.springframework.orm.hibernate5.SpringSessionContext
+#  # 카멜 표기법을 사용하는 경우 다음과 같이 지정
+#    hibernate:
+#      naming:
+#        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+#        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+logging:
+  level:
+    org:
+      springframework: info
