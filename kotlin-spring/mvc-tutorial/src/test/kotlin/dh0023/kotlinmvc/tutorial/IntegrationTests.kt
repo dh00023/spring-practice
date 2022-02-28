@@ -1,6 +1,8 @@
 package dh0023.kotlinmvc.tutorial
 
-import org.assertj.core.api.Assertions.assertThat
+import io.kotest.core.spec.style.AnnotationSpec
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -12,7 +14,7 @@ import org.springframework.http.HttpStatus
 import toSlug
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class IntegrationTests(@Autowired val restTemplate: TestRestTemplate) {
+class IntegrationTests(@Autowired val restTemplate: TestRestTemplate) : AnnotationSpec() {
 
     @BeforeEach
     fun setup() {
@@ -22,16 +24,17 @@ class IntegrationTests(@Autowired val restTemplate: TestRestTemplate) {
     @Test
     fun HOME_연결_테스트() {
         val entity = restTemplate.getForEntity<String>("/")
-        assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(entity.body).isEqualTo("test")
+        entity.statusCode shouldBe HttpStatus.OK
+        entity.body shouldBe "test"
     }
 
     @Test
     fun article_slug_param_test() {
         val title = "Reactor Aluminium has landed"
         val entity = restTemplate.getForEntity<String>("/article/${title.toSlug()}")
-        assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(entity.body).contains(title, "Lorem ipsum")
+
+        entity.statusCode shouldBe HttpStatus.OK
+        entity.body shouldContain title to "Lorem ipsum"
     }
 
     @AfterEach

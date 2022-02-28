@@ -4,11 +4,9 @@ import dh0023.kotlinmvc.tutorial.blog.Article
 import dh0023.kotlinmvc.tutorial.blog.ArticleRepository
 import dh0023.kotlinmvc.tutorial.blog.User
 import dh0023.kotlinmvc.tutorial.blog.UserRepository
-import org.assertj.core.api.Assertions
-import org.assertj.core.api.Assertions.*
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import org.springframework.data.repository.findByIdOrNull
@@ -23,7 +21,7 @@ class RepositoryTest @Autowired constructor(
     val entityManager: TestEntityManager,
     val userRepository: UserRepository,
     val articleRepository: ArticleRepository
-){
+) {
     @Test
     fun findByIdOrNull() {
         val juergen = User("springjuergen", "Juergen", "Hoeller")
@@ -41,7 +39,8 @@ class RepositoryTest @Autowired constructor(
 
         // CrudRepository.findByIdOrNull Kotlin extension provided by default with Spring Data
         val found = articleRepository.findByIdOrNull(article.id!!)
-        assertThat(found).isEqualTo(article)
+
+        found shouldBe article
     }
 
     @Test
@@ -55,6 +54,6 @@ class RepositoryTest @Autowired constructor(
 
         val user = userRepository.findByLogin(juergen.login)
 
-        assertThat(user).isEqualTo(juergen)
+        user shouldBe juergen
     }
 }

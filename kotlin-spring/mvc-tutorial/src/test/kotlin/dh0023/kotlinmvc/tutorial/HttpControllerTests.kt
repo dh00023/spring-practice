@@ -5,8 +5,8 @@ import dh0023.kotlinmvc.tutorial.blog.Article
 import dh0023.kotlinmvc.tutorial.blog.ArticleRepository
 import dh0023.kotlinmvc.tutorial.blog.User
 import dh0023.kotlinmvc.tutorial.blog.UserRepository
+import io.kotest.core.spec.style.AnnotationSpec
 import io.mockk.every
-import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.MediaType
@@ -17,18 +17,18 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @WebMvcTest
-class HttpControllerTests(@Autowired val mockMvc: MockMvc) {
-    @MockkBean
-    private lateinit var userRepository: UserRepository
-
-    @MockkBean
-    private lateinit var articleRepository: ArticleRepository
-
+class HttpControllerTests(
+    @Autowired val mockMvc: MockMvc,
+    @MockkBean var userRepository: UserRepository,
+    @MockkBean var articleRepository: ArticleRepository
+) : AnnotationSpec() {
     @Test
     fun Article_리스트_조회() {
         val juergen = User("springjuergen", "Juergen", "Hoeller")
-        val spring5Article = Article("Spring Framework 5.0 goes GA", "Dear Spring community ...", "Lorem ipsum", juergen)
-        val spring43Article = Article("Spring Framework 4.3 goes GA", "Dear Spring community ...", "Lorem ipsum", juergen)
+        val spring5Article =
+            Article("Spring Framework 5.0 goes GA", "Dear Spring community ...", "Lorem ipsum", juergen)
+        val spring43Article =
+            Article("Spring Framework 4.3 goes GA", "Dear Spring community ...", "Lorem ipsum", juergen)
         every { articleRepository.findAllByOrderByAddedAtDesc() } returns listOf(spring5Article, spring43Article)
 
         mockMvc.perform(get("/api/article/").accept(MediaType.APPLICATION_JSON))
@@ -51,5 +51,4 @@ class HttpControllerTests(@Autowired val mockMvc: MockMvc) {
             .andExpect(jsonPath("\$.[0].login").value(juergen.login))
             .andExpect(jsonPath("\$.[1].login").value(smaldini.login))
     }
-
 }

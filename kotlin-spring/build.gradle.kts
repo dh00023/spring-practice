@@ -1,5 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+val springCloudVersion = "2021.0.0"
+val kotestVersion = "4.4.3"
+
 // pugins
 plugins {
     val kotlinVersion: String = "1.6.10"
@@ -20,8 +23,6 @@ allprojects {
     }
 }
 
-extra["springCloudVersion"] = "2021.0.0"
-
 subprojects {
     apply(plugin = "java")
     apply(plugin = "kotlin")
@@ -40,11 +41,11 @@ subprojects {
         implementation(kotlin("reflect"))
         implementation(kotlin("stdlib"))
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-        implementation("org.slf4j:slf4j-api:1.7.29")
-        implementation("org.springframework.boot:spring-boot-starter-logging")
         implementation("io.github.microutils:kotlin-logging-jvm:2.0.6")
         implementation("org.jetbrains.kotlin:kotlin-reflect")
         implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+        testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
+        testImplementation("io.kotest:kotest-extensions-spring:$kotestVersion")
     }
 
     java.sourceCompatibility = JavaVersion.VERSION_11
@@ -76,9 +77,9 @@ project(":mvc-tutorial") {
         implementation("org.springframework.boot:spring-boot-starter-data-jpa")
         implementation("org.springframework.boot:spring-boot-starter-web")
         implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
-        runtimeOnly("org.postgresql:postgresql")
+//        runtimeOnly("org.postgresql:postgresql")
 
-        testRuntimeOnly("com.h2database:h2")
+        runtimeOnly("com.h2database:h2")
         testImplementation("org.springframework.boot:spring-boot-starter-test") {
             exclude(module = "junit")
             exclude(module = "mockito-core")
@@ -90,7 +91,7 @@ project(":mvc-tutorial") {
 
     dependencyManagement {
         imports {
-            mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+            mavenBom("org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion")
         }
     }
 }
