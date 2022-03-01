@@ -41,7 +41,6 @@ subprojects {
         implementation(kotlin("reflect"))
         implementation(kotlin("stdlib"))
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-        implementation("io.github.microutils:kotlin-logging-jvm:2.0.6")
         implementation("org.jetbrains.kotlin:kotlin-reflect")
         implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
         testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
@@ -61,22 +60,17 @@ subprojects {
     tasks.withType<Test> {
         useJUnitPlatform()
     }
-
-    // kotlin에서는 final클래스가 기본이며, 아래 annotation은 allOpen으로 open을 추가해줘야한다.
-    // open 키워드가 없으면 Proxy 기반으로 Lazy 로딩을 할 수 없음.
-    allOpen {
-        annotation("javax.persistence.Entity")
-        annotation("javax.persistence.Embeddable")
-        annotation("javax.persistence.MappedSuperclass")
-    }
 }
 
 // mvc-tutorial 프로젝트 관련 설정
 project(":mvc-tutorial") {
     dependencies {
         implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+        implementation("io.github.microutils:kotlin-logging-jvm:2.0.6")
         implementation("org.springframework.boot:spring-boot-starter-web")
         implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
+        implementation("org.springframework.cloud:spring-cloud-starter-config")
+        implementation("org.springframework.cloud:spring-cloud-starter-bootstrap")
 //        runtimeOnly("org.postgresql:postgresql")
 
         runtimeOnly("com.h2database:h2")
@@ -87,6 +81,26 @@ project(":mvc-tutorial") {
         testImplementation("org.junit.jupiter:junit-jupiter-api")
         testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
         testImplementation("com.ninja-squad:springmockk:3.0.1")
+    }
+
+    // kotlin에서는 final클래스가 기본이며, 아래 annotation은 allOpen으로 open을 추가해줘야한다.
+    // open 키워드가 없으면 Proxy 기반으로 Lazy 로딩을 할 수 없음.
+    allOpen {
+        annotation("javax.persistence.Entity")
+        annotation("javax.persistence.Embeddable")
+        annotation("javax.persistence.MappedSuperclass")
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom("org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion")
+        }
+    }
+}
+
+project(":service-config") {
+    dependencies {
+        implementation("org.springframework.cloud:spring-cloud-config-server")
     }
 
     dependencyManagement {
