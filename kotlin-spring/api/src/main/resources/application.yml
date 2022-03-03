@@ -1,0 +1,15 @@
+spring:
+  profiles:
+    active: local
+  flyway:
+    enabled: true
+#    baseline-on-migrate: true
+  jpa:
+    show-sql: true
+    generate-ddl: false
+  #    hibernate:
+  #      ddl-auto: update
+  config:
+    import: optional:configserver:http://localhost:8888
+
+debug: true

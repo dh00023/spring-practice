@@ -60,6 +60,20 @@ subprojects {
     tasks.withType<Test> {
         useJUnitPlatform()
     }
+
+    dependencyManagement {
+        imports {
+            mavenBom("org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion")
+        }
+    }
+
+    // kotlin에서는 final클래스가 기본이며, 아래 annotation은 allOpen으로 open을 추가해줘야한다.
+    // open 키워드가 없으면 Proxy 기반으로 Lazy 로딩을 할 수 없음.
+    allOpen {
+        annotation("javax.persistence.Entity")
+        annotation("javax.persistence.Embeddable")
+        annotation("javax.persistence.MappedSuperclass")
+    }
 }
 
 // mvc-tutorial 프로젝트 관련 설정
@@ -87,30 +101,44 @@ project(":mvc-tutorial") {
         testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
         testImplementation("com.ninja-squad:springmockk:3.0.1")
     }
-
-    // kotlin에서는 final클래스가 기본이며, 아래 annotation은 allOpen으로 open을 추가해줘야한다.
-    // open 키워드가 없으면 Proxy 기반으로 Lazy 로딩을 할 수 없음.
-    allOpen {
-        annotation("javax.persistence.Entity")
-        annotation("javax.persistence.Embeddable")
-        annotation("javax.persistence.MappedSuperclass")
+}
+project(":common") {
+    dependencies {
+        compileOnly("org.springframework.boot:spring-boot-starter-data-jpa")
+        implementation("org.flywaydb:flyway-core")
+        implementation("mysql:mysql-connector-java")
+        testRuntimeOnly("com.h2database:h2")
+        testImplementation("org.springframework.boot:spring-boot-starter-test") {
+            exclude(module = "junit")
+            exclude(module = "mockito-core")
+        }
+        testImplementation("org.junit.jupiter:junit-jupiter-api")
+        testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+        testImplementation("com.ninja-squad:springmockk:3.0.1")
     }
 
-    dependencyManagement {
-        imports {
-            mavenBom("org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion")
+    tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") { enabled = false }
+    tasks.getByName<Jar>("jar") { enabled = true }
+}
+
+project(":api") {
+    dependencies {
+        implementation(project(":common"))
+        implementation("io.github.microutils:kotlin-logging-jvm:2.0.6")
+        implementation("org.springframework.boot:spring-boot-starter-web") {
+            exclude(group = "org.springframework.boot", module = "spring-boot-starter-tomcat")
         }
+        implementation("mysql:mysql-connector-java")
+        implementation("org.springframework.boot:spring-boot-starter-undertow")
+        compileOnly("org.springframework.boot:spring-boot-starter-data-jpa")
+
+        implementation("org.springframework.cloud:spring-cloud-starter-config")
+        implementation("org.springframework.cloud:spring-cloud-starter-bootstrap")
     }
 }
 
 project(":service-config") {
     dependencies {
         implementation("org.springframework.cloud:spring-cloud-config-server")
-    }
-
-    dependencyManagement {
-        imports {
-            mavenBom("org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion")
-        }
     }
 }
